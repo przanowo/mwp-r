@@ -1,0 +1,63 @@
+import React from 'react'
+import { Link, NavLink } from 'react-router-dom'
+
+
+import { HiMenuAlt1, HiOutlineHome, HiOutlineShoppingCart } from 'react-icons/hi'
+import { MdOutlineAccountCircle,  } from 'react-icons/md'
+import logo from '../../logo.png'
+
+const Navigation = () => {
+
+    const links = [
+        { label: 'Home', path: '/' },
+        { label: 'Shop', path: '/shop' },
+        { label: 'Man', path: '/man' },
+        { label: 'Woman', path: '/woman' },
+        { label: 'About', path: '/about' },
+        { label: 'Contact', path: '/contact' },
+        // { label: 'Sign In', path: '/signin' },
+        // { label: 'Sign Up', path: '/signup' },
+      ];
+
+  return (
+    <nav className="relative z-20 w-full h-40 sm:h-20 lg:h-24">
+        <div className="fixed z-20 w-full  px-4 text-gray-700 transition duration-200 ease-in-out bg-white innerSticky body-font sm:h-18  md:px-8 lg:px-2.5">
+            <div className="flex items-center justify-center mx-auto max-w-[1920px] h-full w-full">
+
+                <Link to='/'> <img className='inline-flex focus:outline-none lg:pr-10 h-full' alt="Logo" src={logo} /> </Link>
+
+                <ul className="w-full relative hidden lg:flex ltr:md:ml-6 rtl:md:mr-6 ltr:xl:ml-10 rtl:xl:mr-10 py-7">
+                    {links.map((link) => (
+                    <li className='relative inline-flex items-center px-3 py-2 text-sm font-normal xl:text-base text-heading xl:px-4 group-hover:text-black' key={link.path}>
+                        <NavLink to={link.path}>{link.label}</NavLink>
+                    </li>
+                    ))}
+                </ul>
+            {/* //mobile menu */}
+                <div className="lg:hidden fixed z-10 bottom-0 flex items-center justify-between shadow-bottomNavigation text-gray-700 body-font bg-white w-full h-14 sm:h-16 px-4 md:px-8">
+                        <button className="flex flex-col items-center justify-center flex-shrink-0 outline-none focus:outline-none"><HiMenuAlt1/></button>
+                        <Link to='/'> <HiOutlineHome/> </Link>
+                        <button className="flex-shrink-0"> <MdOutlineAccountCircle/> </button>
+
+
+                </div>
+
+
+                <div className='lg:flex hidden ltr:md:ml-6 rtl:md:mr-6 ltr:xl:ml-10 rtl:xl:mr-10 py-7'>
+                    <Link className='px-3 py-2' to='/cart'> <HiOutlineShoppingCart /> </Link>
+                    <Link className='px-3 py-2' to='/Account'> <MdOutlineAccountCircle /> </Link>
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+    
+
+    </nav>
+  )
+}
+
+export default Navigation
