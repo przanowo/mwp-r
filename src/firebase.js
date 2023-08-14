@@ -1,11 +1,18 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { 
-  getStorage, 
-  ref, 
-  uploadBytesResumable, 
-  getDownloadURL 
+import { getFirestore,
+  addDoc,
+  collection,
+  getDocs,
+  doc,
+  getDoc
+
+} from 'firebase/firestore';
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL
 } from 'firebase/storage';
 
 
@@ -47,7 +54,7 @@ export const logout = () => {
 
 export const addProductToFirestore = async (product) => {
   try {
-    await addDoc(collection(firestore, 'products', product.category, 'products'), product);
+    await addDoc(collection(firestore, 'products', product.category, 'product'), product);
     return { success: true, message: 'Product added successfully!' };
   } catch (error) {
     console.error("Error adding product:", error);
@@ -56,18 +63,23 @@ export const addProductToFirestore = async (product) => {
 };
 
 export const uploadImage = async (file, folderName) => {
-  const storageRef = ref(storage, `${folderName}/${file.name}`);
+
+  // Create a unique filename: current timestamp + original file name
+  const uniqueFilename = `${Date.now()}-${file.name}`;
+
+
+  const storageRef = ref(storage, `${folderName}/${uniqueFilename}`);
   const uploadTask = uploadBytesResumable(storageRef, file);
 
   return new Promise((resolve, reject) => {
     uploadTask.on('state_changed',
       (snapshot) => {
         // Handle progress
-      }, 
+      },
       (error) => {
         // Handle error
         reject(error);
-      }, 
+      },
       async () => {
         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
         resolve(downloadURL);
@@ -75,3 +87,49 @@ export const uploadImage = async (file, folderName) => {
     );
   });
 };
+
+
+export const fetchProductsFromFirestore = async () => {
+  const productCategories = ['vintage', 'miniature', 'miniatureB', 'sampleR', 'sample',  ];
+  const allProducts = {};
+
+  for (const category of productCategories) {
+    const productsCollectionQuery = collection(firestore, 'products', category, 'product');
+    const productSnapshot = await getDocs(productsCollectionQuery);
+
+    allProducts[category] = {};
+    productSnapshot.forEach(docSnapshot => {
+      const productData = docSnapshot.data();
+      allProducts[category][docSnapshot.id] = productData;
+    });
+  }
+
+  return allProducts;
+};
+
+export const fetchProductFromFirestore = async (category, productId)  => {
+  const productRef = doc(firestore, 'products', category, 'product', productId);
+  const productDoc = await getDoc(productRef);
+
+  if (!productDoc.exists) {
+      return null;
+  }
+
+  return {
+      id: productDoc.id,
+      ...productDoc.data(),
+  };
+}
+
+export const fetchProductsByCategoryFromFirestore = async (category) => { 
+  const productsCollectionQuery = collection(firestore, 'products', category, 'product');
+  const productSnapshot = await getDocs(productsCollectionQuery);
+
+  const products = {};
+  productSnapshot.forEach(docSnapshot => {
+    const productData = docSnapshot.data();
+    products[docSnapshot.id] = productData;  // storing it in object format
+  });
+
+  return products;
+}

@@ -25,7 +25,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center mt-10">
       <input
         className="p-2 border-2 border-gray-400 rounded"
         type="email"

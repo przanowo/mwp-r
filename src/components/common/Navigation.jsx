@@ -10,6 +10,7 @@ import logo from '../../logo.png'
 
 const Navigation = () => {
     const { user } = React.useContext(AuthContext); // Get the user from AuthContext
+    
 
     const handleLogout = async () => {
         try {
@@ -25,8 +26,8 @@ const Navigation = () => {
     const links = [
         { label: 'Home', path: '/' },
         { label: 'Shop', path: '/shop' },
-        { label: 'Man', path: '/man' },
-        { label: 'Woman', path: '/woman' },
+        { label: 'Man', path: '/shop/man' },
+        { label: 'Woman', path: '/shop/woman' },
         { label: 'About', path: '/about' },
         { label: 'Contact', path: '/contact' },
         // { label: 'Sign In', path: '/signin' },
@@ -68,7 +69,12 @@ const Navigation = () => {
                         <Link className='px-3 py-2' to='/login'> Login </Link>
                         <Link className='px-3 py-2' to='/signup'> Register </Link>
                     </>
-        )}
+                        )}
+                    { user && user.uid === 'gwCvu8CwOCToe2owDmtKEHm7Cvj2' ? (
+                        <Link className='px-3 py-2' to='/upload'> Upload </Link>
+                    ) : (
+                        null
+                    )}
                 </div>
             </div>
         </div>

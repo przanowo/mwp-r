@@ -1,25 +1,18 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const ProductCard = ({ product, category, productId }) => {
-  const navigate = useNavigate();
-console.log(product, category, productId)
-  const handleCardClick = () => {
-    navigate(`/shop/${category}/${productId}`);
-  };
-
   return (
-    <div
-      className='bg-white rounded-lg shadow-lg p-4 cursor-pointer'
-      onClick={handleCardClick}
-    >
-      <h3>{product.brand}</h3>
-      <p>Model: {product.model}</p>
-      <p>Quantity: {product.quantity}</p>
-      <p>Description: {product.description}</p>
-      <p>Year: {product.Year}</p>
-      <p>Type: {product.Type}</p>
-    </div>
+      <div key={productId} className="border p-4 rounded-md hover:shadow-lg transition-shadow duration-300">
+        <div className="h-48 w-full bg-gray-200 overflow-hidden rounded-md">
+          <img src={product.mainImageUrl} alt={product.title} className="object-cover h-full w-full" />
+        </div>
+
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold">{product.title}</h3>
+          <p className="text-xl font-bold mt-2">${product.price}</p>
+        </div>
+      </div>
   );
 };
 

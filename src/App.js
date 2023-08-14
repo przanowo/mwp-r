@@ -16,6 +16,8 @@ import Product from './components/product/Product';
 import Login from './components/auth/Login';
 import Signup from './components/auth/SignUp';
 import ProductUpload from './components/routes/ProductUpload';
+import Vintage from './components/routes/Vintage';
+import Category from './components/routes/Category';
 // import ProtectedRoute from './hooks/ProtectedRoutes';
 
 
@@ -25,17 +27,22 @@ function App() {
  
   const routes = [
     { path: '/', component: <Home /> },
-    { path: '/shop', component: <Shop /> },
-    { path: '/man', component: <Man /> },
-    { path: '/woman', component: <Woman /> },
     { path: '/about', component: <About /> },
     { path: '/contact', component: <Contact /> },
-    { path: '/miniature', component: <Miniature /> },
     { path: '/we', component: <We /> },
     { path: '/faq', component: <Faq /> },
     { path: '/login', component:  <Login /> }, 
     { path: '/signup', component: <Signup /> },
-    { path: '/shop/:category/:key', component: <Product /> },
+    { path: '/shop', component: <Shop /> },
+    { path: '/shop/:category/:productId', component: <Product /> },
+    { path: '/shop/:category', component: <Category /> },
+    // { path: '/shop/vintage', component: <Vintage /> },
+    // { path: '/shop/miniature', component: <Miniature /> },
+    // { path: '/shop/miniatureB', component: <Miniature /> },
+    // { path: '/shop/sample', component: <Miniature /> },
+    // { path: '/shop/sampler', component: <Miniature /> },
+    // { path: '/shop/woman', component: <Woman /> },
+    // { path: '/shop/man', component: <Man /> },
     // { path: '/upload', component: <ProtectedRoute element={<ProductUpload />} /> }
     { path: '/upload', component: <ProductUpload /> }
     

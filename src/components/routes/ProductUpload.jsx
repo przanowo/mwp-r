@@ -3,14 +3,17 @@ import { addProductToFirestore, uploadImage } from '../../firebase';
 
 const ProductUpload = () => {
     const [product, setProduct] = useState({
-        category: "man",
+        sex: "",
+        category: "",
         brand: "",
         model: "",
-        quantity: "",
+        price: "",
+        stock: "",
+        mL: "",
+        title: "",
         description: "",
         Year: "",
         Type: "",
-        imageUrl: ""
     });
 
     const fileInputRef = useRef(null);
@@ -47,15 +50,17 @@ const ProductUpload = () => {
         if (result.success) {
             // Clear the form if product was added successfully
             setProduct({
-                category: "man",
+                sex: "",
+                category: "",
                 brand: "",
                 model: "",
                 price: "",
-                quantity: "",
+                stock: "",
+                mL: "",
+                title: "",
                 description: "",
                 Year: "",
-                Type: "edt",
-                imageUrl: ""
+                Type: "",
                 
             });
             setImages([]);  // This line clears the image inputs
@@ -70,41 +75,63 @@ const ProductUpload = () => {
     };
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-200 mt-10">
+        <div className="flex justify-center items-center bg-gray-200 mt-10">
             <form className="bg-white p-6 rounded shadow-md w-full max-w-md" onSubmit={handleSubmit}>
             <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
+                    Sex:
+                </label>
+                <select
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="sex"
+                    value={product.sex}
+                    onChange={handleChange}
+                    required>
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="man">Man</option>
+                    <option value="woman">Woman</option>
+                    <option value="unisex">Unisex</option>
+                </select>
+                <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="category">
                     Category:
                 </label>
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="category"
                     value={product.category}
-                    onChange={handleChange}>
-                    <option value="man">Man</option>
-                    <option value="woman">Woman</option>
+                    onChange={handleChange}
+                    required>
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="sample">Sample</option>
+                    <option value="sampleR">Sample refilled</option>
+                    <option value="miniatureB">Miniature with box</option>
+                    <option value="miniature">Miniature without box</option>
+                    <option value="vintage">Vintage</option>
                 </select>
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Type">
+                <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="Type">
                     Type:
                 </label>
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="Type"
                     value={product.Type}
-                    onChange={handleChange}>
-                    <option value="edt">EDT</option>
-                    <option value="edp">EDP</option>
+                    onChange={handleChange}
+                    required>
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="edt">Eau de Toilette</option>
+                    <option value="edp">Eau de Parfum</option>
+                    <option value="parfum">Parfum</option>
                 </select>
             </div>
 
-        {['brand', 'model', 'price', 'quantity', 'description', 'Year'].map((field, idx) => (
+        {['brand', 'model', 'price', 'stock', 'mL', 'title', 'description', 'Year'].map((field, idx) => (
             <div key={idx} className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={field}>
                     {field.charAt(0).toUpperCase() + field.slice(1)}:
                 </label>
                 <input
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    type={field === 'price' || field === 'quantity' || field === 'Year' ? 'number' : 'text'}
+                    type={field === 'price' || field === 'stock' || field === 'ml' || field === 'Year' ? 'number' : 'text'}
                     name={field}
                     value={product[field]}
                     onChange={handleChange}
