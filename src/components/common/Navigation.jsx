@@ -1,5 +1,7 @@
 import React from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import AuthContext from '../../hooks/AuthContext'
+import { logout } from '../../firebase'
 
 
 import { HiMenuAlt1, HiOutlineHome, HiOutlineShoppingCart } from 'react-icons/hi'
@@ -7,6 +9,18 @@ import { MdOutlineAccountCircle,  } from 'react-icons/md'
 import logo from '../../logo.png'
 
 const Navigation = () => {
+    const { user } = React.useContext(AuthContext); // Get the user from AuthContext
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            console.log("Successfully logged out!");
+            // Optional: redirect or update state/UI here
+        } catch (error) {
+            console.error("Error logging out: ", error.message);
+        }
+    };
+
 
     const links = [
         { label: 'Home', path: '/' },
@@ -45,17 +59,19 @@ const Navigation = () => {
 
                 <div className='lg:flex hidden ltr:md:ml-6 rtl:md:mr-6 ltr:xl:ml-10 rtl:xl:mr-10 py-7'>
                     <Link className='px-3 py-2' to='/cart'> <HiOutlineShoppingCart /> </Link>
-                    <Link className='px-3 py-2' to='/Account'> <MdOutlineAccountCircle /> </Link>
+                    <Link className='px-3 py-2' to='/account'> <MdOutlineAccountCircle /> </Link>
+                    {user ? ( // If user is logged in, show logout button
+                        <button className='px-3 py-2' onClick={handleLogout}> Logout </button>
+                        ) : (
+                        // If user is not logged in, show login and register buttons
+                    <>
+                        <Link className='px-3 py-2' to='/login'> Login </Link>
+                        <Link className='px-3 py-2' to='/signup'> Register </Link>
+                    </>
+        )}
                 </div>
-
-
-
             </div>
-
-
         </div>
-    
-
     </nav>
   )
 }

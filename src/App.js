@@ -1,4 +1,5 @@
-import { Route, Routes } from 'react-router-dom';
+// import { AuthProvider, AuthContext } from './hooks';
+import { Route, Routes,  } from 'react-router-dom';
 import './App.css';
 import Navigation from './components/common/Navigation';
 import Home from './components/routes/Home';
@@ -7,18 +8,20 @@ import Man from './components/routes/Man';
 import Woman from './components/routes/Woman';
 import About from './components/routes/About';
 import Contact from './components/routes/Contact';
-import SignIn from './components/auth/SignIn';
-import SingUp from './components/auth/SignUp';
 import Miniature from './components/routes/Miniature';
 import Footer from './components/common/Footer';
 import We from './components/routes/We';
 import Faq from './components/routes/Faq'
 import Product from './components/product/Product';
+import Login from './components/auth/Login';
+import Signup from './components/auth/SignUp';
+import ProductUpload from './components/routes/ProductUpload';
+// import ProtectedRoute from './hooks/ProtectedRoutes';
 
 
 
 function App() {
-
+  
  
   const routes = [
     { path: '/', component: <Home /> },
@@ -27,15 +30,17 @@ function App() {
     { path: '/woman', component: <Woman /> },
     { path: '/about', component: <About /> },
     { path: '/contact', component: <Contact /> },
-    { path: '/signin', component: <SignIn /> },
-    { path: '/signup', component: <SingUp /> },
     { path: '/miniature', component: <Miniature /> },
     { path: '/we', component: <We /> },
     { path: '/faq', component: <Faq /> },
-    { path: '/shop/:category/:key', component: <Product /> }
+    { path: '/login', component:  <Login /> }, 
+    { path: '/signup', component: <Signup /> },
+    { path: '/shop/:category/:key', component: <Product /> },
+    // { path: '/upload', component: <ProtectedRoute element={<ProductUpload />} /> }
+    { path: '/upload', component: <ProductUpload /> }
     
   ];
-
+      
   return (
     <div className="flex flex-col min-h-screen">
       <Navigation />
