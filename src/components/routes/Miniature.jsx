@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchProductsByCategoryFromFirestore } from '../../firebase'; // Adjust path as necessary
 import ProductCard from '../product/ProductCard';
+import { useSearch } from '../../hooks/SearchContext';
 
 const Miniature = () => {
+    const { searchTerm } = useSearch();
     const [products, setProducts] = useState({
         miniature: {},
         miniatureB: {}
@@ -23,8 +25,15 @@ const Miniature = () => {
         loadProducts('miniatureB');
     }, []);
 
+    const filteredProducts = (categoryProducts) => {
+        return Object.keys(categoryProducts).filter((productId) => {
+          const product = categoryProducts[productId];
+          return product.title.toLowerCase().includes(searchTerm.toLowerCase());
+        });
+      };
+
     return (
-        <div className="container mx-auto p-4">
+        <div className="flex-grow container mx-auto p-4">
             {Object.keys(products).map((category) => (
                 <div key={category} className="mb-8">
                     <Link to={`/shop/${category}`} className="block mb-4">
@@ -33,7 +42,7 @@ const Miniature = () => {
                       </h2>
                     </Link>
                     <div className="grid grid-cols-4 gap-4">
-                        {products[category] && Object.keys(products[category]).map((productId) => (
+                        {products[category] && Object.keys(products[category]) && filteredProducts(products[category]).map((productId) => (
                                 <div key={productId} className="border rounded shadow p-4 hover:border-gray-400 hover:shadow-lg transition duration-200 ease-in">
                                     <ProductCard product={products[category][productId]} category={category} productId={productId} />
                                 </div>

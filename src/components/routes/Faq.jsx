@@ -2,7 +2,7 @@ import React from 'react';
 
 function Faq() {
     return (
-        <div className="max-w-3xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 text-gray-700">
+        <div className="flex-grow max-w-3xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 text-gray-700">
             <h1 className="text-3xl font-bold mb-6">Frequently Asked Questions</h1>
 
             {/* Existing Questions */}

@@ -161,12 +161,16 @@ export const fetchProductsFromFirestore = async () => {
 
   for (const category of productCategories) {
     const productsCollectionQuery = collection(firestore, 'products', category, 'product');
+    // console.log(productsCollectionQuery);
     const productSnapshot = await getDocs(productsCollectionQuery);
+    // console.log(productSnapshot);
 
     allProducts[category] = {};
     productSnapshot.forEach(docSnapshot => {
       const productData = docSnapshot.data();
+      // console.log(productData);
       allProducts[category][docSnapshot.id] = productData;
+      // console.log(productData);
     });
   }
 

@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import ProductCard from '../product/ProductCard';
 import { fetchProductsFromFirestore } from '../../firebase';
 import { Link } from 'react-router-dom';
+import { useSearch } from '../../hooks/SearchContext';
 
 const Shop = () => {
+  const { searchTerm } = useSearch();
   const [products, setProducts] = useState({});
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -16,11 +18,12 @@ const Shop = () => {
     loadProducts();
   }, []);
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
+  // const handleSearchChange = (event) => {
+  //   setSearchTerm(event.target.value);
+  // };
 
   const filteredProducts = (categoryProducts) => {
+    console.log('categoryProducts', categoryProducts)
     return Object.keys(categoryProducts).filter((productId) => {
       const product = categoryProducts[productId];
       return product.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -28,11 +31,11 @@ const Shop = () => {
   };
 
   return (
-    <main className='relative flex-grow my-10 sm:my-10 lg:my-15'>
+    <main className='flex-grow relative my-10 sm:my-10 lg:my-15'>
       <div>
         <h1 className='text-center uppercase text-4xl font-semibold mb-8'>SHOP</h1>
       </div>
-      <div className='mb-6'>
+      {/* <div className='mb-6'>
         <input 
           type='text' 
           value={searchTerm} 
@@ -40,7 +43,7 @@ const Shop = () => {
           placeholder="Search for products..." 
           className="border p-2 w-full rounded"
         />
-      </div>
+      </div> */}
       {Object.keys(products).map((category) => (
         <div key={category}>
           <Link to={`/shop/${category}`} className='block mb-4'>

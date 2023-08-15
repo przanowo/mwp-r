@@ -5,11 +5,11 @@ const Cart = () => {
   const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useContext(CartContext);
 
   if (cart.length === 0) {
-    return <div>Your cart is empty.</div>;
+    return <div className='flex flex-grow'>Your cart is empty.</div>;
   }
 
   return (
-<div className="bg-white p-8 rounded-md shadow-md w-full max-w-xl mx-auto">
+<div className="flex flex-grow  bg-white p-8 rounded-md shadow-md w-full max-w-xl mx-auto">
     <h2 className="text-2xl font-bold mb-6">Your Cart</h2>
     <ul>
         {cart.map((product) => (

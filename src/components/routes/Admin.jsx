@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Admin = () => {
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+    <div className="flex-grow bg-gray-100 min-h-screen flex flex-col items-center justify-center">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-4">Admin Panel</h1>
         

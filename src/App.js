@@ -8,12 +8,10 @@ import About from './components/routes/About';
 import Contact from './components/routes/Contact';
 import Miniature from './components/routes/Miniature';
 import Footer from './components/common/Footer';
-import We from './components/routes/We';
 import Faq from './components/routes/Faq'
 import Product from './components/product/Product';
 import Login from './components/auth/Login';
 import Signup from './components/auth/SignUp';
-// import ProductUpload from './components/product/ProductUpload';
 import Category from './components/routes/Category';
 import ProtectedRoutes from './hooks/ProtectedRoutes';
 import Sample from './components/routes/Sample';
@@ -24,7 +22,8 @@ import Cart from './components/product/Cart';
 import Admin from './components/routes/Admin';
 import ProductUpload from './components/admin/ProductUpload';
 import Dashboard from './components/admin/Dashboard';
-// import ProductsAdm from './components/admin/ProductsAdm';
+import Man from './components/routes/Man';
+import Woman from './components/routes/Woman';
 
 
 
@@ -37,7 +36,6 @@ function App() {
     { path: '/contact', component: <Contact /> },
     { path: '/privacy', component: <Privacy /> },
     { path: '/terms', component: <TermsAndConditions /> },
-    { path: '/we', component: <We /> },
     { path: '/faq', component: <Faq /> },
     { path: '/login', component:  <Login /> }, 
     { path: '/signup', component: <Signup /> },
@@ -47,6 +45,10 @@ function App() {
     { path: '/shop/:category', component: <Category /> },
     { path: '/miniature', component: <Miniature /> },
     { path: '/sample', component: <Sample /> },
+    { path: '/man', component: <Man /> },
+    { path: '/woman', component: <Woman /> },
+
+
 
     { path: '/checkout', component: <Cart /> }
     
