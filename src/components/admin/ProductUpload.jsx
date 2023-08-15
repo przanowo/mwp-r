@@ -3,6 +3,7 @@ import { addProductToFirestore, uploadImage } from '../../firebase';
 
 const ProductUpload = () => {
     const [product, setProduct] = useState({
+        cond: "",
         sex: "",
         category: "",
         brand: "",
@@ -50,6 +51,7 @@ const ProductUpload = () => {
         if (result.success) {
             // Clear the form if product was added successfully
             setProduct({
+                cond: "",
                 sex: "",
                 category: "",
                 brand: "",
@@ -78,7 +80,20 @@ const ProductUpload = () => {
         <div className="flex justify-center items-center bg-gray-200 mt-10">
             <form className="bg-white p-6 rounded shadow-md w-full max-w-md" onSubmit={handleSubmit}>
             <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cond">
+                    Condition:
+                </label>
+                <select
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="cond"
+                    value={product.cond}
+                    onChange={handleChange}
+                    required>
+                    <option value="" disabled >Select an option</option>
+                    <option value="new">New</option>
+                    <option value="used">Used</option>
+                </select>
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="sex">
                     Sex:
                 </label>
                 <select
@@ -87,7 +102,7 @@ const ProductUpload = () => {
                     value={product.sex}
                     onChange={handleChange}
                     required>
-                    <option value="" disabled selected>Select an option</option>
+                    <option value="" disabled >Select an option</option>
                     <option value="man">Man</option>
                     <option value="woman">Woman</option>
                     <option value="unisex">Unisex</option>
@@ -101,7 +116,7 @@ const ProductUpload = () => {
                     value={product.category}
                     onChange={handleChange}
                     required>
-                    <option value="" disabled selected>Select an option</option>
+                    <option value="" disabled >Select an option</option>
                     <option value="sample">Sample</option>
                     <option value="sampleR">Sample refilled</option>
                     <option value="miniatureB">Miniature with box</option>
@@ -117,7 +132,7 @@ const ProductUpload = () => {
                     value={product.Type}
                     onChange={handleChange}
                     required>
-                    <option value="" disabled selected>Select an option</option>
+                    <option value="" disabled >Select an option</option>
                     <option value="edt">Eau de Toilette</option>
                     <option value="edp">Eau de Parfum</option>
                     <option value="parfum">Parfum</option>
@@ -131,7 +146,7 @@ const ProductUpload = () => {
                 </label>
                 <input
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    type={field === 'price' || field === 'stock' || field === 'ml' || field === 'Year' ? 'number' : 'text'}
+                    type={field === 'price' || field === 'stock' || field === 'mL' || field === 'Year' ? 'number' : 'text'}
                     name={field}
                     value={product[field]}
                     onChange={handleChange}
@@ -159,7 +174,9 @@ const ProductUpload = () => {
         <div className="flex items-center justify-between">
             <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="submit">
+                type="submit"
+                
+                >
                 Upload
             </button>
         </div>

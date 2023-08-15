@@ -5,7 +5,10 @@ import { getFirestore,
   collection,
   getDocs,
   doc,
-  getDoc
+  getDoc,
+  setDoc,
+  deleteDoc,
+  updateDoc
 
 } from 'firebase/firestore';
 import {
@@ -32,6 +35,39 @@ const storage = getStorage(app);
 
 const googleProvider = new GoogleAuthProvider();
 
+export const createUserDocumentFromAuth = async (
+  userAuth,
+  additionalInformation = {}
+) => {
+  if (!userAuth) return;
+  const userDocRef = doc(firestore, 'users', userAuth.uid);
+  // console.log(userDocRef);
+  const userSnapshot = await getDoc(userDocRef);
+  // console.log(userSnapshot);
+  // console.log(userSnapshot.exists());
+
+  //is userdata not exists
+  //create / set doc with data from userAuth in my collection
+  if (!userSnapshot.exists()) {
+    const { displayName, email } = userAuth;
+    const createdAt = new Date();
+    try {
+      await setDoc(userDocRef, {
+        displayName,
+        email,
+        createdAt,
+        ...additionalInformation,
+      });
+    } catch (error) {
+      console.log(error, 'error creat user');
+    }
+  }
+  return userDocRef;
+  //is userdata exists
+  //return userdata
+};
+
+
 export const signInWithGoogle = () => {
     return signInWithPopup(auth, googleProvider);
 };
@@ -51,6 +87,36 @@ export const sendPassResetEmail = (email) => {
 export const logout = () => {
   return signOut(auth);
 };
+
+export const fetchUserDetails = async (userId) => {
+  try {
+    const userDocRef = doc(firestore, 'users', userId);
+    const userSnapshot = await getDoc(userDocRef);
+    
+    if (userSnapshot.exists()) {
+      return { success: true, data: userSnapshot.data(), message: 'User details fetched successfully!' };
+    } else {
+      throw new Error('User not found in Firestore.');
+    }
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+
+export const updateUserDetails = async (userId, details) => {
+  const userDocRef = doc(firestore, 'users', userId);
+
+  try {
+    await setDoc(userDocRef, details, { merge: true });
+    return { success: true, message: 'User details updated successfully!' };
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    return { success: false, message: error.message };
+  }
+};
+
 
 export const addProductToFirestore = async (product) => {
   try {
@@ -133,3 +199,99 @@ export const fetchProductsByCategoryFromFirestore = async (category) => {
 
   return products;
 }
+
+export const addProductToUserCollection = async (userId, productId, product) => {
+  // // console.log(product);
+  const userProductRef = doc(firestore, 'users', userId, 'products', productId);
+  // console.log(firestore, 'users', userId, 'products', productId);
+
+  // Check if the product already exists in Firestore
+  const productSnapshot = await getDoc(userProductRef);
+  
+  if (productSnapshot.exists()) {
+      // Product exists, increment its quantity
+      const currentQuantity = productSnapshot.data().quantity || 0;
+      await updateDoc(userProductRef, { quantity: currentQuantity + product.quantity });
+  } else {
+      // Product doesn't exist, set it with the given quantity
+      await setDoc(userProductRef, product, { merge: true });
+  }
+};
+
+
+
+
+export const removeProductFromUserCollection = async (userId, productId) => {
+  const userProductRef = doc(firestore, 'users', userId, 'products', productId);
+  await deleteDoc(userProductRef);
+};
+
+export const fetchUserCart = async (userId) => {
+  const productsRef = collection(doc(firestore, 'users', userId), 'products');
+  const productSnapshot = await getDocs(productsRef);
+
+  const cart = [];
+  productSnapshot.forEach(doc => {
+    cart.push({ ...doc.data(), id: doc.id });
+  });
+
+  return cart;
+};
+
+export const updateProductInFirestore = async (category, productId, updatedData) => {
+  const productRef = doc(firestore, 'products', category, 'product', productId);
+  if (!category || !productId) {
+    console.error('Category or Product ID is missing!');
+    return;
+  }
+  try {
+    await updateDoc(productRef, updatedData);
+    return { success: true, message: 'Product updated successfully!' };
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+export const deleteProductFromFirestore = async (category, productId) => {
+  const productRef = doc(firestore, 'products', category, 'product', productId);
+  if (!category || !productId) {
+    console.log('Category or Product ID is missing!');
+    return;
+  }
+  try {
+    await deleteDoc(productRef);
+    return { success: true, message: 'Product deleted successfully!' };
+  } catch (error) {
+    console.log("Error deleting product:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+
+// export const handleProductDataChange = (productData, event) => {
+//   const { name, value } = event.target;
+//   return { ...productData, [name]: value };
+// }
+
+// export const updateProductInFirestore = async (categoryId, productId, productData) => {
+//   try {
+//     const productRef = doc(firestore, 'products', categoryId, 'product', productId);
+//     await updateDoc(productRef, productData);
+//     return { success: true };
+//   } catch (error) {
+//     console.error("Error updating product:", error);
+//     return { success: false, message: error.message };
+//   }
+// }
+
+// export const deleteProductFromFirestore = async (categoryId, productId) => {
+//   try {
+//     const productRef = doc(firestore, 'products', categoryId, 'product', productId);
+//     await deleteDoc(productRef);
+//     return { success: true };
+//   } catch (error) {
+//     console.error("Error deleting product:", error);
+//     return { success: false, message: error.message };
+//   }
+// }

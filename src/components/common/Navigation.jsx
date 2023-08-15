@@ -9,6 +9,7 @@ import { MdOutlineAccountCircle,  } from 'react-icons/md'
 import logo from '../../logo.png'
 
 const Navigation = () => {
+
     const { user } = React.useContext(AuthContext); // Get the user from AuthContext
     
 
@@ -28,6 +29,9 @@ const Navigation = () => {
         { label: 'Shop', path: '/shop' },
         { label: 'Man', path: '/shop/man' },
         { label: 'Woman', path: '/shop/woman' },
+        { label: 'Vintage', path: '/shop/vintage' },
+        { label: 'Miniature', path: '/miniature' },
+        { label: 'Sample', path: '/sample' },
         { label: 'About', path: '/about' },
         { label: 'Contact', path: '/contact' },
         // { label: 'Sign In', path: '/signin' },
@@ -59,10 +63,11 @@ const Navigation = () => {
 
 
                 <div className='lg:flex hidden ltr:md:ml-6 rtl:md:mr-6 ltr:xl:ml-10 rtl:xl:mr-10 py-7'>
-                    <Link className='px-3 py-2' to='/cart'> <HiOutlineShoppingCart /> </Link>
-                    <Link className='px-3 py-2' to='/account'> <MdOutlineAccountCircle /> </Link>
                     {user ? ( // If user is logged in, show logout button
-                        <button className='px-3 py-2' onClick={handleLogout}> Logout </button>
+                        <>
+                        <Link to='/'><button className='px-3 py-2' onClick={handleLogout}> Logout </button></Link>
+                        <Link className='px-3 py-2 text-2xl text-center' to='/account'> <MdOutlineAccountCircle /> </Link>
+                        </>
                         ) : (
                         // If user is not logged in, show login and register buttons
                     <>
@@ -71,10 +76,11 @@ const Navigation = () => {
                     </>
                         )}
                     { user && user.uid === 'gwCvu8CwOCToe2owDmtKEHm7Cvj2' ? (
-                        <Link className='px-3 py-2' to='/upload'> Upload </Link>
+                        <Link className='px-3 py-2' to='/admin'> Admin </Link>
                     ) : (
                         null
                     )}
+                    <Link className='px-3 py-2 text-2xl text-center' to='/checkout'> <HiOutlineShoppingCart /> </Link>
                 </div>
             </div>
         </div>
