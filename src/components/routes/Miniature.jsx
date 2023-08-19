@@ -13,10 +13,17 @@ const Miniature = () => {
 
     useEffect(() => {
         const loadProducts = async (category) => {
+            console.log('category', category);  
+            console.log('products', products);
             const fetchedProducts = await fetchProductsByCategoryFromFirestore(category);
+
+            const productsArray = Object.keys(fetchedProducts).map(productId => ({
+                id: productId,
+                ...fetchedProducts[productId],
+            }));
             setProducts(prevState => ({
                 ...prevState,
-                [category]: fetchedProducts
+                [category]: productsArray
             }));
         };
 
@@ -42,11 +49,14 @@ const Miniature = () => {
                       </h2>
                     </Link>
                     <div className="grid grid-cols-4 gap-4">
-                        {products[category] && Object.keys(products[category]) && filteredProducts(products[category]).map((productId) => (
+                        {products[category] && Object.keys(products[category]) && filteredProducts(products[category]).map((productId) => {
+                            const product = products[category][productId];
+                            return (
                                 <div key={productId} className="border rounded shadow p-4 hover:border-gray-400 hover:shadow-lg transition duration-200 ease-in">
-                                    <ProductCard product={products[category][productId]} category={category} productId={productId} />
+                                    <ProductCard product={product} category={product.categoryId} productId={product.id} />
                                 </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             ))}

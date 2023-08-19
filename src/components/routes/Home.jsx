@@ -39,9 +39,9 @@ const Home = () => {
         </Link>
       </div>
       <div className="mx-auto coll-span-1 sm:col-span-2">
-        <Link className='flex h-full mx-auto coll-span-full sm:col-span-2 justify-center items-center'  to='/shop'> 
-          <img className='h-full group flex justify-center relative overflow-hidden' alt="new" src={newP} /> 
-          <h1 className='uppercase text-sm lg:text-3xl p-2 lg:p-4 absolute text-center bg-cyan-100/50'>Shop</h1>
+        <Link className='flex h-full mx-auto coll-span-full sm:col-span-2 justify-center items-center'  to='/shop/parfum'> 
+          <img className='h-full group flex justify-center relative overflow-hidden' alt="parfum" src={newP} /> 
+          <h1 className='uppercase text-sm lg:text-3xl p-2 lg:p-4 absolute text-center bg-cyan-100/50'>Parfum</h1>
         </Link>
       </div>
       <div className="mx-auto coll-span-full sm:col-span-5">

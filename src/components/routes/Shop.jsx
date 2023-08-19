@@ -23,7 +23,7 @@ const Shop = () => {
   // };
 
   const filteredProducts = (categoryProducts) => {
-    console.log('categoryProducts', categoryProducts)
+    // console.log('categoryProducts', categoryProducts)
     return Object.keys(categoryProducts).filter((productId) => {
       const product = categoryProducts[productId];
       return product.title.toLowerCase().includes(searchTerm.toLowerCase());

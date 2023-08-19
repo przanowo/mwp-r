@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'; // import useContext
 import { CartContext } from './CartContext';
-import { addProductToUserCollection, removeProductFromUserCollection, fetchUserCart } from '../firebase';
+import { addProductToUserCollection, removeProductFromUserCollection, fetchUserCart, decreaseProductQuantityInFirestore, increaseProductQuantityInFirestore } from '../firebase';
 import AuthContext from './AuthContext'; // import AuthContext
 
 export const CartProvider = ({ children }) => {
@@ -19,31 +19,33 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = async (product, category, productId) => {
     let productToAdd = product;
-    // console.log(product, productId, product);
+    console.log(product,);
     // If the product doesn't have a quantity attribute, create a copy with a quantity of 1.
     if (!product.quantity) {
         productToAdd = { ...product, quantity: 1 };
     }
 
-    setCart((prevCart) => {
-        // Find the index of the product if it exists in the cart
-        const productIndex = prevCart.findIndex(item => item.id === productId);
-        // console.log(productId);
-
-        if (productIndex !== -1) {
-            // Product already exists in the cart, so we update its quantity
-            const newCart = [...prevCart];
-            newCart[productIndex].quantity += 1;
-            return newCart;
-        } else {
-            // Product doesn't exist in the cart, so we add it with a quantity of 1
-            return [...prevCart, productToAdd];
-        }
-    });
 
     if (user) {
-        await addProductToUserCollection(user.uid, productId, productToAdd); // use user.uid
-    }
+      await addProductToUserCollection(user.uid, product.id, productToAdd);
+      
+      // Refresh cart from Firestore after updating.
+      const updatedCart = await fetchUserCart(user.uid);
+      setCart(updatedCart);
+  } else {
+      setCart((prevCart) => {
+          const productIndex = prevCart.findIndex(item => item.id === product.id);
+          
+          if (productIndex !== -1) {
+              const newCart = [...prevCart];
+              newCart[productIndex].quantity += 1;
+              return newCart;
+          } else {
+              return [...prevCart, productToAdd];
+          }
+      });
+  }
+
 };
 
 
@@ -55,23 +57,38 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const increaseQuantity = (productId) => {
-    setCart((prevCart) => prevCart.map(item => {
-      if(item.id === productId) {
-        return { ...item, quantity: item.quantity + 1 };
-      }
-      return item;
-    }));
+  const increaseQuantity = async (productId) => {
+    if (user) {
+      await increaseProductQuantityInFirestore(user.uid, productId);
+      const updatedCart = await fetchUserCart(user.uid);
+      setCart(updatedCart);
+    } else {
+      setCart((prevCart) => prevCart.map(item => {
+        if (item.id === productId) {
+          return { ...item, quantity: item.quantity + 1 };
+        }
+        return item;
+      }));
+    }
   };
 
-  const decreaseQuantity = (productId) => {
-    setCart((prevCart) => prevCart.map(item => {
-      if(item.id === productId && item.quantity > 1) {
-        return { ...item, quantity: item.quantity - 1 };
-      }
-      return item;
-    }));
+  const decreaseQuantity = async (productId) => {
+    if (user) {
+      await decreaseProductQuantityInFirestore(user.uid, productId);
+      const updatedCart = await fetchUserCart(user.uid);
+      setCart(updatedCart);
+    } else {
+      setCart((prevCart) => prevCart.map(item => {
+        if (item.id === productId && item.quantity > 1) {
+          return { ...item, quantity: item.quantity - 1 };
+        } else if (item.id === productId && item.quantity <= 1) {
+          return null;
+        }
+        return item;
+      }).filter(item => item !== null));
+    }
   };
+
 
   return (
     <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity }}>

@@ -31,6 +31,7 @@ const ProductUpload = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setProduct(prev => ({ ...prev, [name]: value }));
+        console.log(product);
     };
 
     const handleSubmit = async (e) => {
@@ -46,6 +47,7 @@ const ProductUpload = () => {
         product.mainImageUrl = imageUrls[mainImageIndex]; // Setting the main image URL
       
         const result = await addProductToFirestore(product);
+        console.log('result:',result, 'product:', product);
     
         
         if (result.success) {
@@ -122,6 +124,7 @@ const ProductUpload = () => {
                     <option value="miniatureB">Miniature with box</option>
                     <option value="miniature">Miniature without box</option>
                     <option value="vintage">Vintage</option>
+                    <option value="parfum">Parfum</option>
                 </select>
                 <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="Type">
                     Type:
@@ -175,7 +178,6 @@ const ProductUpload = () => {
             <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 type="submit"
-                
                 >
                 Upload
             </button>

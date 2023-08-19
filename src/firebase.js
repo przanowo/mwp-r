@@ -15,7 +15,8 @@ import {
   getStorage,
   ref,
   uploadBytesResumable,
-  getDownloadURL
+  getDownloadURL,
+  deleteObject
 } from 'firebase/storage';
 
 
@@ -66,28 +67,21 @@ export const createUserDocumentFromAuth = async (
   //is userdata exists
   //return userdata
 };
-
-
 export const signInWithGoogle = () => {
     return signInWithPopup(auth, googleProvider);
 };
-
 export const signInWithEmailPassword = (email, password) => {
   return signInWithEmailAndPassword(auth, email, password);
 };
-
 export const signUpWithEmailPassword = (email, password) => {
     return createUserWithEmailAndPassword(auth, email, password); // Return the Promise here
   };
-
 export const sendPassResetEmail = (email) => {
     return sendPasswordResetEmail(auth, email);
 };
-
 export const logout = () => {
   return signOut(auth);
 };
-
 export const fetchUserDetails = async (userId) => {
   try {
     const userDocRef = doc(firestore, 'users', userId);
@@ -103,8 +97,6 @@ export const fetchUserDetails = async (userId) => {
     return { success: false, message: error.message };
   }
 };
-
-
 export const updateUserDetails = async (userId, details) => {
   const userDocRef = doc(firestore, 'users', userId);
 
@@ -116,18 +108,16 @@ export const updateUserDetails = async (userId, details) => {
     return { success: false, message: error.message };
   }
 };
-
-
 export const addProductToFirestore = async (product) => {
   try {
     await addDoc(collection(firestore, 'products', product.category, 'product'), product);
+    console.log('product', product)
     return { success: true, message: 'Product added successfully!' };
   } catch (error) {
     console.error("Error adding product:", error);
     return { success: false, message: error.message };
   }
 };
-
 export const uploadImage = async (file, folderName) => {
 
   // Create a unique filename: current timestamp + original file name
@@ -153,10 +143,8 @@ export const uploadImage = async (file, folderName) => {
     );
   });
 };
-
-
 export const fetchProductsFromFirestore = async () => {
-  const productCategories = ['vintage', 'miniature', 'miniatureB', 'sampleR', 'sample',  ];
+  const productCategories = ['vintage', 'miniature', 'miniatureB', 'sampleR', 'sample', 'parfum'  ];
   const allProducts = {};
 
   for (const category of productCategories) {
@@ -176,7 +164,6 @@ export const fetchProductsFromFirestore = async () => {
 
   return allProducts;
 };
-
 export const fetchProductFromFirestore = async (category, productId)  => {
   const productRef = doc(firestore, 'products', category, 'product', productId);
   const productDoc = await getDoc(productRef);
@@ -190,7 +177,6 @@ export const fetchProductFromFirestore = async (category, productId)  => {
       ...productDoc.data(),
   };
 }
-
 export const fetchProductsByCategoryFromFirestore = async (category) => { 
   const productsCollectionQuery = collection(firestore, 'products', category, 'product');
   const productSnapshot = await getDocs(productsCollectionQuery);
@@ -203,11 +189,10 @@ export const fetchProductsByCategoryFromFirestore = async (category) => {
 
   return products;
 }
-
 export const addProductToUserCollection = async (userId, productId, product) => {
   // // console.log(product);
   const userProductRef = doc(firestore, 'users', userId, 'products', productId);
-  // console.log(firestore, 'users', userId, 'products', productId);
+  console.log("firestore", 'users', userId, 'products', productId);
 
   // Check if the product already exists in Firestore
   const productSnapshot = await getDoc(userProductRef);
@@ -215,21 +200,42 @@ export const addProductToUserCollection = async (userId, productId, product) => 
   if (productSnapshot.exists()) {
       // Product exists, increment its quantity
       const currentQuantity = productSnapshot.data().quantity || 0;
-      await updateDoc(userProductRef, { quantity: currentQuantity + product.quantity });
+      await updateDoc(userProductRef, { quantity: currentQuantity + 1 });
   } else {
       // Product doesn't exist, set it with the given quantity
       await setDoc(userProductRef, product, { merge: true });
   }
 };
+export const getUserProductRef = (userId, productId) => {
+  return doc(firestore, 'users', userId, 'products', productId);
+};
+export const increaseProductQuantityInFirestore = async (userId, productId) => {
+  const userProductRef = getUserProductRef(userId, productId);
+  const productSnapshot = await getDoc(userProductRef);
 
+  if (productSnapshot.exists()) {
+    const currentQuantity = productSnapshot.data().quantity || 0;
+    await updateDoc(userProductRef, { quantity: currentQuantity + 1 });
+  }
+};
+export const decreaseProductQuantityInFirestore = async (userId, productId) => {
+  const userProductRef = getUserProductRef(userId, productId);
+  const productSnapshot = await getDoc(userProductRef);
 
+  if (productSnapshot.exists()) {
+    const currentQuantity = productSnapshot.data().quantity || 0;
 
-
+    if (currentQuantity <= 1) {
+      await deleteDoc(userProductRef);  // Remove product if quantity becomes 0
+    } else {
+      await updateDoc(userProductRef, { quantity: currentQuantity - 1 });
+    }
+  }
+};
 export const removeProductFromUserCollection = async (userId, productId) => {
   const userProductRef = doc(firestore, 'users', userId, 'products', productId);
   await deleteDoc(userProductRef);
 };
-
 export const fetchUserCart = async (userId) => {
   const productsRef = collection(doc(firestore, 'users', userId), 'products');
   const productSnapshot = await getDocs(productsRef);
@@ -241,7 +247,6 @@ export const fetchUserCart = async (userId) => {
 
   return cart;
 };
-
 export const updateProductInFirestore = async (category, productId, updatedData) => {
   const productRef = doc(firestore, 'products', category, 'product', productId);
   if (!category || !productId) {
@@ -256,7 +261,6 @@ export const updateProductInFirestore = async (category, productId, updatedData)
     return { success: false, message: error.message };
   }
 };
-
 export const deleteProductFromFirestore = async (category, productId) => {
   const productRef = doc(firestore, 'products', category, 'product', productId);
   if (!category || !productId) {
@@ -271,31 +275,15 @@ export const deleteProductFromFirestore = async (category, productId) => {
     return { success: false, message: error.message };
   }
 };
-
-
-// export const handleProductDataChange = (productData, event) => {
-//   const { name, value } = event.target;
-//   return { ...productData, [name]: value };
-// }
-
-// export const updateProductInFirestore = async (categoryId, productId, productData) => {
-//   try {
-//     const productRef = doc(firestore, 'products', categoryId, 'product', productId);
-//     await updateDoc(productRef, productData);
-//     return { success: true };
-//   } catch (error) {
-//     console.error("Error updating product:", error);
-//     return { success: false, message: error.message };
-//   }
-// }
-
-// export const deleteProductFromFirestore = async (categoryId, productId) => {
-//   try {
-//     const productRef = doc(firestore, 'products', categoryId, 'product', productId);
-//     await deleteDoc(productRef);
-//     return { success: true };
-//   } catch (error) {
-//     console.error("Error deleting product:", error);
-//     return { success: false, message: error.message };
-//   }
-// }
+export const deleteImageFromGSC = async (imageUrl) => {
+  try {
+    // assuming your imageUrl is something like "gs://bucket-name/file-path"
+    // if not, you might need to adjust the path accordingly
+    const imageRef = ref(storage, imageUrl);
+    await deleteObject(imageRef);
+    return { success: true, message: 'Image deleted successfully!' };
+  } catch (error) {
+    console.error("Error deleting image:", error);
+    return { success: false, message: error.message };
+  }
+};

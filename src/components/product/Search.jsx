@@ -10,11 +10,11 @@ const Search = ({ onSearch }) => {
     const loadProducts = async () => {
       const fetchedProducts = await fetchProductsFromFirestore();
       setProducts(fetchedProducts);
-      console.log(products);
+      // console.log(products);
     };
 
     loadProducts();
-    console.log(products);
+    // console.log(products);
   }, []);
 
   const handleSearchChange = (event) => {

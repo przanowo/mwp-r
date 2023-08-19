@@ -11,7 +11,7 @@ const ProductCard = ({ product, category, productId }) => {
   
 
   const handleAddToCart = () => {
-    // console.log(product, category, productId);
+    console.log(productId);
     addToCart(product, category, productId); // assuming product object has an 'id' property which is equal to 'productId'
   };
 

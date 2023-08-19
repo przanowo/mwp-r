@@ -20,21 +20,21 @@ const Man = () => {
       for (const categoryKey  in fetchedProducts) {
         console.log('categoryKey', categoryKey);
         for (const productID  in fetchedProducts[categoryKey]) {
-          console.log('productID', productID);
+          // console.log('productID', productID);
           const product = fetchedProducts[categoryKey][productID];
           
-          console.log('product', product);  
+          // console.log('product', product);  
           if (product.sex === 'man') {
             allProducts.push({
               ...product,
               categoryId: categoryKey,
-              productId: productID
+              id: productID
             });
           }
         }
       }
       setProducts(allProducts);
-      console.log('allProducts for men', allProducts);
+      // console.log('allProducts for men', allProducts);
     };
   
     loadProducts();
@@ -55,11 +55,9 @@ const Man = () => {
       <ul className='grid grid-cols-4 gap-4'>
       
       {filteredProducts.map(product => (
-        <Link to={`/shop/${product.categoryId}/${product.productId}`} key={product.productId}>
           <li key={product.id}>
-            <ProductCard product={product} category={product.categoryId} productId={product.productId}  />
+            <ProductCard product={product} category={product.categoryId} productId={product.id}  />
           </li>
-        </Link>
         )
         )}
       </ul>

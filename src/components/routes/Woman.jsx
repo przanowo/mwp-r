@@ -23,7 +23,7 @@ const Woman = () => {
             allProducts.push({
               ...product,
               categoryId: categoryKey,
-              productId: productID
+              id: productID
             });
           }
         }
@@ -44,11 +44,9 @@ const Woman = () => {
       </div> 
       <ul className='grid grid-cols-4 gap-4'>
       {filteredProducts.map(product => (
-        <Link to={`/shop/${product.categoryId}/${product.productId}`} key={product.productId}>
           <li key={product.id}>
-            <ProductCard product={product} category={product.categoryId} productId={product.productId}  />
+            <ProductCard product={product} category={product.categoryId} productId={product.id}  />
           </li>
-        </Link>
         )
         )}
       </ul>

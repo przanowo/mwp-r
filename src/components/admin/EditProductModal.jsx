@@ -1,7 +1,7 @@
 // EditProductModal.jsx
 
 import React, { useState, useRef } from 'react';
-import {updateProductInFirestore, uploadImage, deleteProductFromFirestore} from '../../firebase';
+import {updateProductInFirestore, uploadImage, deleteProductFromFirestore, deleteImageFromGSC} from '../../firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 
@@ -86,7 +86,11 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
   const handleDelete = async () => {
     const confirmation = window.confirm("Are you sure you want to delete this product?");
     if (confirmation) {
-        console.log(category, productId)
+        for (const imageUrl of product.imageUrls) {
+            await deleteImageFromGSC(imageUrl);
+          }
+
+        // console.log(category, productId)
       const response = await deleteProductFromFirestore(category, productId);
 
       if (response.success) {
@@ -100,9 +104,10 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
   };
   const onDelete = () => {
     try {
-        navigate(-1);
-    } catch {
         navigate(`/shop/${category}`);
+        
+    } catch {
+        navigate(-1);
     }
 };
 
@@ -196,7 +201,7 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
             </div>
             <div className="flex items-center space-x-2">
                 <label className="w-1/4 text-right font-medium">Year:</label>
-                <input className="border p-2 flex-grow rounded w-full" type="text" name="year" value={editedProduct.year} onChange={handleInputChange} placeholder="Year" />
+                <input className="border p-2 flex-grow rounded w-full" type="text" name="year" value={editedProduct.Year} onChange={handleInputChange} placeholder="Year" />
             </div>
             {/* ... other input fields with similar structure ... */}
 
