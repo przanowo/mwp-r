@@ -15,9 +15,9 @@ const Home = () => {
     <main className='relative flex-grow my-10 sm:my-10 lg:my-15'>
     <div className='mb-12 md:mb-14 xl:mb-2 px-2.5 grid grid-cols-2 sm:grid-cols-9 gap-2 md:gap-2.5 max-w-[1920px] mx-auto'>
       <div className="flex mx-auto coll-span-full sm:col-span-5 justify-center items-center"> 
-        <Link className='flex mx-auto coll-span-full sm:col-span-5 justify-center items-center' to='/woman'>
-          <img className='h-full group flex justify-center relative overflow-hidden' alt="woman" src={woman} /> 
-          <h1 className='uppercase w-1/3 text-sm lg:text-3xl p-2 lg:p-4 absolute text-center bg-cyan-100/50'>woman</h1>
+        <Link className='flex mx-auto coll-span-full sm:col-span-5 justify-center items-center' to='/shop'>
+          <img className='h-full group flex justify-center relative overflow-hidden' alt="shop" src={woman} /> 
+          <h1 className='uppercase w-1/3 text-sm lg:text-3xl p-2 lg:p-4 absolute text-center bg-cyan-100/50'>shop</h1>
         </Link>
       </div>
       <div className="mx-auto coll-span-1 sm:col-span-2">

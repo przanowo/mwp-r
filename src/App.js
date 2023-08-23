@@ -43,10 +43,10 @@ function App() {
     { path: '/shop', component: <Shop /> },
     { path: '/shop/:category/:productId', component: <Product /> },
     { path: '/shop/:category', component: <Category /> },
-    { path: '/miniature', component: <Miniature /> },
-    { path: '/sample', component: <Sample /> },
-    { path: '/man', component: <Man /> },
-    { path: '/woman', component: <Woman /> },
+    // { path: '/miniature', component: <Miniature /> },
+    // { path: '/sample', component: <Sample /> },
+    // { path: '/man', component: <Man /> },
+    // { path: '/woman', component: <Woman /> },
 
 
 
@@ -64,6 +64,10 @@ function App() {
         ))}
         {/* If no matching route is found, render the Home component */}
         <Route path="*" element={<Home />} />
+        <Route path="/miniature" element={<Miniature />}  />
+        <Route path="/sample" element={<Sample />}  />
+        <Route path="/shop/vintage/" element={<Category category='vintage' />} />
+        <Route path="/shop/parfum/" element={<Category category='parfum' />} />
         <Route path="/admin" element={<ProtectedRoutes />} >
           <Route index element={<Admin />} />
           <Route path="dashboard" element={<Dashboard />} />

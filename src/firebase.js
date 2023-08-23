@@ -8,7 +8,12 @@ import { getFirestore,
   getDoc,
   setDoc,
   deleteDoc,
-  updateDoc
+  updateDoc,
+  query,
+  limit,
+  orderBy,
+  startAfter
+
 
 } from 'firebase/firestore';
 import {
@@ -143,27 +148,40 @@ export const uploadImage = async (file, folderName) => {
     );
   });
 };
-export const fetchProductsFromFirestore = async () => {
-  const productCategories = ['vintage', 'miniature', 'miniatureB', 'sampleR', 'sample', 'parfum'  ];
+export const fetchProductsFromFirestore = async (lastVisibleProducts = {}) => {
+  const productCategories = ['vintage', 'miniature', 'miniatureB', 'sampleR', 'sample', 'parfum'];
   const allProducts = {};
+  const newLastVisibleProducts = {};
 
   for (const category of productCategories) {
-    const productsCollectionQuery = collection(firestore, 'products', category, 'product');
-    // console.log(productsCollectionQuery);
-    const productSnapshot = await getDocs(productsCollectionQuery);
-    // console.log(productSnapshot);
+    let q = query(
+      collection(firestore, 'products', category, 'product'),
+      orderBy('title', 'desc'),
+      limit(4)
+    );
+    if (lastVisibleProducts[category]) {
+      q = query(
+        collection(firestore, 'products', category, 'product'),
+        orderBy('title', 'desc'),
+        startAfter(lastVisibleProducts[category]),
+        limit(4)
+      );
+    }
 
+    const querySnapshot = await getDocs(q);
     allProducts[category] = {};
-    productSnapshot.forEach(docSnapshot => {
-      const productData = docSnapshot.data();
-      // console.log(productData);
-      allProducts[category][docSnapshot.id] = productData;
-      // console.log(productData);
+    querySnapshot.forEach(doc => {
+      allProducts[category][doc.id] = doc.data();
     });
+    newLastVisibleProducts[category] = querySnapshot.docs[querySnapshot.docs.length - 1];
   }
 
-  return allProducts;
+  return {
+    allProducts,
+    lastVisible: newLastVisibleProducts
+  };
 };
+
 export const fetchProductFromFirestore = async (category, productId)  => {
   const productRef = doc(firestore, 'products', category, 'product', productId);
   const productDoc = await getDoc(productRef);
@@ -177,18 +195,34 @@ export const fetchProductFromFirestore = async (category, productId)  => {
       ...productDoc.data(),
   };
 }
-export const fetchProductsByCategoryFromFirestore = async (category) => { 
-  const productsCollectionQuery = collection(firestore, 'products', category, 'product');
-  const productSnapshot = await getDocs(productsCollectionQuery);
 
+
+export const fetchProductsByCategoryFromFirestore = async (category, lastVisibleProduct = null) => {
+  let q = query(
+    collection(firestore, 'products', category, 'product'),
+    orderBy('title', 'desc'),
+    limit(10)
+  );
+  if (lastVisibleProduct) {
+    q = query(
+      collection(firestore, 'products', category, 'product'),
+      orderBy('title', 'desc'),
+      startAfter(lastVisibleProduct),
+      limit(10)
+    );
+  }
+  const querySnapshot = await getDocs(q);
   const products = {};
-  productSnapshot.forEach(docSnapshot => {
-    const productData = docSnapshot.data();
-    products[docSnapshot.id] = productData;  // storing it in object format
+  querySnapshot.forEach(doc => {
+    products[doc.id] = doc.data();
   });
+  const lastProduct = querySnapshot.docs[querySnapshot.docs.length - 1];
+  return {
+    products,
+    lastProduct,
+  };
+};
 
-  return products;
-}
 export const addProductToUserCollection = async (userId, productId, product) => {
   // // console.log(product);
   const userProductRef = doc(firestore, 'users', userId, 'products', productId);
