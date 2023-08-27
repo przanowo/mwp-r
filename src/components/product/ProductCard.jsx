@@ -40,16 +40,16 @@ const ProductCard = ({ product, category, productId }) => {
         </div>
 
         <div className="mt-4">
-          <h3 className="text-lg font-semibold">{currentProduct.title}</h3>
+          <h3 className="text-lg font-semibold overflow-hidden h-[110px]">{currentProduct.title}</h3>
           <p className="text-xl font-bold mt-2">${currentProduct.price}</p>
         </div>
         </Link>
         <div className="mt-4">
-          <button className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition duration-200" onClick={handleAddToCart}>
+          <button className="bg-gray-300 text-black px-4 py-2 rounded-md hover:bg-gray-400 transition duration-200" onClick={handleAddToCart}>
             Add to cart
           </button>
           { user && user.uid === 'gwCvu8CwOCToe2owDmtKEHm7Cvj2' ? (
-                        <button className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition duration-200" onClick={handleEditProduct}>
+                        <button className="bg-gray-300 text-black px-4 py-2 rounded-md hover:bg-gray-400 transition duration-200" onClick={handleEditProduct}>
                             Edit
                         </button>
                     ) : (

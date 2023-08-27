@@ -1,61 +1,49 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-
-import man from '../../images/man.png'
-import woman from '../../images/woman.png'
-import vintage from '../../images/vintage.png'
-import miniature from '../../images/miniature.png'
-import sample from '../../images/sample.png'
-import newP from '../../images/new.png'
-
-
+import React from 'react';
+import { SlArrowDown } from 'react-icons/sl';
 
 const Home = () => {
-  return (
-    <main className='relative flex-grow my-10 sm:my-10 lg:my-15'>
-    <div className='mb-12 md:mb-14 xl:mb-2 px-2.5 grid grid-cols-2 sm:grid-cols-9 gap-2 md:gap-2.5 max-w-[1920px] mx-auto'>
-      <div className="flex mx-auto coll-span-full sm:col-span-5 justify-center items-center"> 
-        <Link className='flex mx-auto coll-span-full sm:col-span-5 justify-center items-center' to='/shop'>
-          <img className='h-full group flex justify-center relative overflow-hidden' alt="shop" src={woman} /> 
-          <h1 className='uppercase w-1/3 text-sm lg:text-3xl p-2 lg:p-4 absolute text-center bg-cyan-100/50'>shop</h1>
-        </Link>
-      </div>
-      <div className="mx-auto coll-span-1 sm:col-span-2">
-        <Link className='flex h-full mx-auto coll-span-full sm:col-span-2 justify-center items-center' to='/shop/vintage'> 
-          <img className='h-full group flex justify-center relative overflow-hidden' alt="vintage" src={vintage} /> 
-          <h1 className='uppercase text-sm lg:text-3xl p-2 lg:p-4 absolute text-center bg-cyan-100/50'>vintage</h1>
-        </Link>
-      </div>
-      <div className="mx-auto coll-span-1 sm:col-span-2">
-        <Link className='flex h-full mx-auto coll-span-full sm:col-span-2 justify-center items-center' to='/miniature'> 
-          <img className='h-full group flex justify-center relative overflow-hidden' alt="miniature" src={miniature} /> 
-          <h1 className='uppercase text-sm lg:text-3xl p-2 lg:p-4 absolute text-center bg-cyan-100/50'>miniature</h1>
-        </Link>
-      </div>
-      <div className="mx-auto coll-span-1 sm:col-span-2">
-        <Link className='flex h-full mx-auto coll-span-full sm:col-span-2 justify-center items-center'  to='/sample'> 
-          <img className='h-full group flex justify-center relative overflow-hidden' alt="sample" src={sample} /> 
-          <h1 className='uppercase text-sm lg:text-3xl p-2 lg:p-4 absolute text-center bg-cyan-100/50'>sample</h1>
-        </Link>
-      </div>
-      <div className="mx-auto coll-span-1 sm:col-span-2">
-        <Link className='flex h-full mx-auto coll-span-full sm:col-span-2 justify-center items-center'  to='/shop/parfum'> 
-          <img className='h-full group flex justify-center relative overflow-hidden' alt="parfum" src={newP} /> 
-          <h1 className='uppercase text-sm lg:text-3xl p-2 lg:p-4 absolute text-center bg-cyan-100/50'>Parfum</h1>
-        </Link>
-      </div>
-      <div className="mx-auto coll-span-full sm:col-span-5">
-        <Link className='flex mx-auto coll-span-full sm:col-span-5 justify-center items-center'  to='/man'> 
-          <img className='h-full group flex justify-center relative overflow-hidden' alt="man" src={man} /> 
-          <h1 className='uppercase w-1/3 text-sm lg:text-3xl p-2 lg:p-4 absolute text-center bg-cyan-100/50'>man</h1>
-        </Link>
-      </div>
-    </div>
-    <div className="bg-black text-white p-20 m-2">
-        <p className='text-center'>  Discover a World of Scents! 🌸 Dive into our exquisite collection of miniature fragrances, timeless vintage perfumes, and contemporary aromatic wonders. Every drop tells a story, every scent is a journey. Find your signature or relive a memory. Welcome to Mini Parfum Queen where elegance is bottled.</p>
-    </div>
-    </main>
-  )
-}
+  const nextDivRef = React.useRef(null);
 
-export default Home
+  return (
+      // <main className='flex  bg-cover bg-center h-screen bg-[url(https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fmpq-bg.jpg?alt=media&token=68c2375b-3f6c-4bae-9cab-536a93e035f4)]'>
+      //   <div className='flex flex-col items-center justify-center w-full h-max bg-black bg-opacity-50'>
+      //     {/* <h1 className='text-4xl text-white'>Welcome to Mini Parfum Queen</h1>
+      //     <h2 className='text-2xl text-white'>Discover a World of Scents! 🌸 Dive into our exquisite collection of miniature fragrances, timeless vintage perfumes, and contemporary aromatic wonders. Every drop tells a story, every scent is a journey. Find your signature or relive a memory. Welcome to Mini Parfum Queen where elegance is bottled.</h2> */}
+
+      //   </div>
+      // </main>
+
+    <main className="">
+      <div className='flex bg-cover bg-center h-screen bg-[url(https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fmpq-bg.jpg?alt=media&token=68c2375b-3f6c-4bae-9cab-536a93e035f4)]'>
+      <button 
+          className="absolute bottom-4 right-1/2 transform translate-x-1/2 cursor-pointer rounded-full bg-white bg-opacity-20 px-24 text-4xl text-white"
+          onClick={() => nextDivRef.current.scrollIntoView({ behavior: 'smooth' })}
+        >
+          <SlArrowDown />
+        </button>
+
+      </div>
+      <div ref={nextDivRef} className=''>
+
+    </div>
+      <div className="flex flex-row items-center bg-gray-300 text-black text-xl my-28 ">
+        <div className='flex'>
+          <img src="https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2F28.png?alt=media&token=81aee1b0-e27a-4bb7-a18c-e3a2f63fd2c1" alt="img1" />
+        </div>
+        <div className='flex'>
+          <p className='text-center'>  Discover a World of Scents! 🌸 Dive into our exquisite collection of miniature fragrances, timeless vintage perfumes, and contemporary aromatic wonders. Every drop tells a story, every scent is a journey. Find your signature or relive a memory. Welcome to Mini Parfum Queen where elegance is bottled.</p>
+        </div>
+        <div className='flex' >
+          <img src="https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2F27.png?alt=media&token=1b560eb6-41b9-4935-bc9e-5142f86c0cb9" alt="" />
+        </div>
+      </div>
+
+      <div className="flex">
+        
+      </div>
+    </main>
+  );
+};
+
+export default Home;
+

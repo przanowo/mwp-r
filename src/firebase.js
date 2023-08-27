@@ -41,6 +41,31 @@ const storage = getStorage(app);
 
 const googleProvider = new GoogleAuthProvider();
 
+export const copyProductsAndAddField = async () => {
+  try {
+    // Fetch all products from the source collection
+    const sourceCollectionPath = 'products/miniatureB/product';
+    const sourceCollectionRef = collection(firestore, sourceCollectionPath);
+    const sourceSnapshot = await getDocs(sourceCollectionRef);
+
+    // Copy each product to the destination collection
+    const destinationCollectionPath = 'products/miniature/product';
+    sourceSnapshot.forEach(async (docSnapshot) => {
+      const productData = docSnapshot.data();
+      // Add a new boolean field 'box' with value 'true'
+      productData.box = true;
+
+      // Add the product data to the destination collection
+      await addDoc(collection(firestore, destinationCollectionPath), productData);
+    });
+    
+    return { success: true, message: 'Products copied successfully!' };
+  } catch (error) {
+    console.error("Error copying products:", error);
+    return { success: false, message: error.message };
+  }
+};
+
 export const createUserDocumentFromAuth = async (
   userAuth,
   additionalInformation = {}
@@ -149,7 +174,7 @@ export const uploadImage = async (file, folderName) => {
   });
 };
 export const fetchProductsFromFirestore = async (lastVisibleProducts = {}) => {
-  const productCategories = ['vintage', 'miniature', 'miniatureB', 'sampleR', 'sample', 'parfum'];
+  const productCategories = ['vintage', 'miniature', 'sample', 'parfum', 'gold', 'powder', 'gift', 'soap'];
   const allProducts = {};
   const newLastVisibleProducts = {};
 

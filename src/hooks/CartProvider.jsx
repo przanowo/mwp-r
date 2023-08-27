@@ -34,16 +34,21 @@ export const CartProvider = ({ children }) => {
       setCart(updatedCart);
   } else {
       setCart((prevCart) => {
-          const productIndex = prevCart.findIndex(item => item.id === product.id);
-          
-          if (productIndex !== -1) {
-              const newCart = [...prevCart];
-              newCart[productIndex].quantity += 1;
-              return newCart;
-          } else {
-              return [...prevCart, productToAdd];
-          }
-      });
+        const existingProduct = prevCart.find(item => item.id === product.id);
+
+        if (existingProduct) {
+            // If the product exists, map through the cart and update its quantity
+            return prevCart.map(item => {
+                if (item.id === product.id) {
+                    return { ...item, quantity: item.quantity + 1 };
+                }
+                return item;
+            });
+        } else {
+            // If the product does not exist, add it to the cart
+            return [...prevCart, productToAdd];
+        }
+    });
   }
 
 };

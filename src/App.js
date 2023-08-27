@@ -22,8 +22,8 @@ import Cart from './components/product/Cart';
 import Admin from './components/routes/Admin';
 import ProductUpload from './components/admin/ProductUpload';
 import Dashboard from './components/admin/Dashboard';
-import Man from './components/routes/Man';
-import Woman from './components/routes/Woman';
+// import Man from './components/routes/Man';
+// import Woman from './components/routes/Woman';
 
 
 
@@ -55,7 +55,7 @@ function App() {
   ];
       
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col bg-gray-200 ">
       <Navigation />
       <Routes>
         {/* Map through the routes array and render the routes */}
@@ -68,6 +68,7 @@ function App() {
         <Route path="/sample" element={<Sample />}  />
         <Route path="/shop/vintage/" element={<Category category='vintage' />} />
         <Route path="/shop/parfum/" element={<Category category='parfum' />} />
+        <Route path="/shop/soapandpowder/" element={<Category category='SoapPowder' />} />
         <Route path="/admin" element={<ProtectedRoutes />} >
           <Route index element={<Admin />} />
           <Route path="dashboard" element={<Dashboard />} />

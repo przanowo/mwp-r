@@ -209,6 +209,10 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
                 <label className="w-1/4 text-right align-top font-medium">Description:</label>
                 <textarea className="border p-2 flex-grow rounded h-32  w-full" name="description" value={editedProduct.description} onChange={handleInputChange} placeholder="Description"></textarea>
             </div>
+            <div className="flex items-start space-x-2 mt-4">
+                <label className="w-1/4 text-right align-top font-medium">Description NOT VISIBLE:</label>
+                <textarea className="border p-2 flex-grow rounded h-32  w-full" name="descriptionnv" value={editedProduct.descriptionnv} onChange={handleInputChange} placeholder="Descriptio NOT VISIBLEn"></textarea>
+            </div>
             <div className="flex items-center space-x-2">
                 <label className="w-1/4 text-right font-medium">Images:</label>
                 <div className="w-3/4 grid grid-cols-2 gap-4">
@@ -216,7 +220,7 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
                         <div key={index}>
                             <img 
                               src={imgUrl} 
-                              alt="Product Image" 
+                              alt="Product" 
                               className="w-full h-32 object-cover rounded-md"
                               width={50}
                               // style={{border: index === mainImageIndex ? '2px solid blue' : ''}} 

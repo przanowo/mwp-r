@@ -8,9 +8,9 @@ const Footer = () => {
     const currentYear = new Date().getFullYear();
   return (
     <>
-    <footer className='flex-shrink-0 border-b-4 border-heading mt-9 md:mt-11 lg:mt-16 3xl:mt-20 pt-2.5 lg:pt-0 2xl:pt-2'>
-        <div className="mx-auto max-w-[1920px] px-4 md:pb-1 2xl:pb-8">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-9 xl:gap-5  pb-9 md:pb-14 lg:pb-6 2xl:pb-6 3xl:pb-16 lg:mb-0.5 2xl:mb-0 3xl:-mb-1 xl:grid-cols-6 ">
+    <footer className='flex-shrink-0 border-b-4 border-heading mt-9 md:mt-11 lg:mt-16 3xl:mt-20 pt-2.5 lg:pt-0 2xl:pt-2 bg-inherit'>
+        <div className="mx-auto max-w-[1920px] px-4 md:pb-1 2xl:pb-8 bg-inherit">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-9 xl:gap-5 bg-inherit pb-9 md:pb-14 lg:pb-6 2xl:pb-6 3xl:pb-16 lg:mb-0.5 2xl:mb-0 3xl:-mb-1 xl:grid-cols-6 ">
                 <div className="pb-1 md:pb-0 undefined">
                     <h4 className="mb-5 text-sm font-semibold text-heading md:text-base xl:text-lg 2xl:mb-6 3xl:mb-7">Social</h4>
                     <ul className="text-xs lg:text-sm text-body flex flex-col space-y-3 lg:space-y-3.5">

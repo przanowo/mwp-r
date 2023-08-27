@@ -1,16 +1,19 @@
-import React from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'
 import AuthContext from '../../hooks/AuthContext'
 import { logout } from '../../firebase'
-import Search from '../product/Search'
+// import Search from '../product/Search'
 import { HiMenuAlt1, HiOutlineHome, HiOutlineShoppingCart } from 'react-icons/hi'
 import { MdOutlineAccountCircle,  } from 'react-icons/md'
-import logo from '../../logo.png'
-import { useSearch } from '../../hooks/SearchContext';
+import logoblack from '../../logoblack.png'
+import logowhite from '../../logowhite.png'
+// import { useSearch } from '../../hooks/SearchContext';
 
 const Navigation = () => {
     const { user } = React.useContext(AuthContext); // Get the user from AuthContext
-    const { setSearchTerm } = useSearch();
+    const [scrolled, setScrolled] = useState(false);
+    // const [hovered, setHovered] = useState(false);
+    // const { setSearchTerm } = useSearch();
 
     const handleLogout = async () => {
         try {
@@ -22,48 +25,63 @@ const Navigation = () => {
         }
     };
 
+    useEffect(() => {
+        const handleScroll = () => {
+            const offset = window.scrollY;
+            if (offset > 0) {
+                setScrolled(true);
+            } else {
+                setScrolled(false);
+            }
+        };
 
-    const links = [
-        // { label: 'Home', path: '/' },
-        { label: 'Shop', path: '/shop' },
-        // { label: 'Man', path: '/man' },
-        // { label: 'Woman', path: '/woman' },
-        // { label: 'Vintage', path: '/shop/vintage' },
-        // { label: 'Miniature', path: '/miniature' },
-        // { label: 'Sample', path: '/sample' },
-        // { label: 'About', path: '/about' },
-        // { label: 'Contact', path: '/contact' },
-        // { label: 'Sign In', path: '/signin' },
-        // { label: 'Sign Up', path: '/signup' },
-      ];
+        // Attach the scroll listener
+        window.addEventListener('scroll', handleScroll);
+
+        // Cleanup
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+    const logoSrc = scrolled ? logoblack : logowhite;
+    const fixedLogoClasses = `${logoSrc}`;
+    const navbarClasses = scrolled ? 'bg-white text-black' : 'text-white';
+    const fixedNavbarClasses = `lg:fixed z-20 w-screen px-4 transition duration-200 ease-in-out sm:h-18 md:px-8 lg:px-2.5 ${navbarClasses}`;
+
+    // const links = [
+    //     // { label: 'Home', path: '/' },
+    //     { label: 'Shop', path: '/shop' },
+    //     // { label: 'Man', path: '/man' },
+    //     // { label: 'Woman', path: '/woman' },
+    //     // { label: 'Vintage', path: '/shop/vintage' },
+    //     // { label: 'Miniature', path: '/miniature' },
+    //     // { label: 'Sample', path: '/sample' },
+    //     // { label: 'About', path: '/about' },
+    //     // { label: 'Contact', path: '/contact' },
+    //     // { label: 'Sign In', path: '/signin' },
+    //     // { label: 'Sign Up', path: '/signup' },
+    //   ];
 
   return (
-    <nav className="relative z-20 w-full h-40 sm:h-20 lg:h-24">
-        <div className="fixed z-20 w-full  px-4 text-gray-700 transition duration-200 ease-in-out bg-white innerSticky body-font sm:h-18  md:px-8 lg:px-2.5">
-            <div className="flex items-center justify-center mx-auto max-w-[1920px] h-full w-full">
-                
-                <Link to='/'> <img className='inline-flex focus:outline-none lg:pr-10 h-full' alt="Logo" src={logo} /> </Link>
-                
-                {/* <ul className="w-full relative hidden lg:flex ltr:md:ml-6 rtl:md:mr-6 ltr:xl:ml-10 rtl:xl:mr-10 py-7">
-                    {links.map((link) => (
-                    <li className='relative inline-flex items-center px-3 py-2 text-sm font-normal xl:text-base text-heading xl:px-4 group-hover:text-black' key={link.path}>
-                        <NavLink to={link.path}>{link.label}</NavLink>
-                    </li>
-                    ))}
-                </ul> */}
+    <nav 
+        className="lg: absolute z-20 h-26 sm:h-20 lg:h-20 overflow-hidden lg:mb-6"
+        // onMouseEnter={() => setHovered(true)} // When mouse enters
+        // onMouseLeave={() => setHovered(false)} // When mouse leaves
+        >
+        <div className={fixedNavbarClasses}>
+            <div className="flex items-center justify-center lg:justify-between max-w-screen h-full w-full">
+                <Link to='/'> <img className='max-h-24 md:max-h-24 lg:max-h-16 inline-flex focus:outline-none lg:pr-10 ' alt="Logo" src={fixedLogoClasses} /> </Link>
 
-                <Search onSearch={setSearchTerm} />
-
-            {/* //mobile menu */}
-                <div className="lg:hidden fixed z-10 bottom-0 flex items-center justify-between shadow-bottomNavigation text-gray-700 body-font bg-white w-full h-14 sm:h-16 px-4 md:px-8">
-                        <button className="flex flex-col items-center justify-center flex-shrink-0 outline-none focus:outline-none"><HiMenuAlt1/></button>
-                        <Link to='/'> <HiOutlineHome/> </Link>
-                        <button className="flex-shrink-0"> <MdOutlineAccountCircle/> </button>
-
-
+{/* //desktop menu */}
+                <div className="flex text-center items-center">
+                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop'> Shop </Link>
+                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/vintage'> Vintage </Link>
+                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/parfum'> Perfume </Link>
+                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/miniature'> Miniature </Link>
+                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/sample'> Sample </Link>
+                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/soapandpowder'> Soap & Powder </Link>
                 </div>
-
-
                 <div className='lg:flex hidden ltr:md:ml-6 rtl:md:mr-6 ltr:xl:ml-10 rtl:xl:mr-10 py-7'>
                     {user ? ( // If user is logged in, show logout button
                         <>
@@ -83,6 +101,12 @@ const Navigation = () => {
                         null
                     )}
                     <Link className='px-3 py-2 text-2xl text-center' to='/checkout'> <HiOutlineShoppingCart /> </Link>
+                </div>
+{/* //mobile menu */}
+                <div className="lg:hidden fixed z-10 bottom-0 flex items-center justify-between shadow-bottomNavigation text-gray-700 body-font bg-white w-full h-14 sm:h-16 px-4 md:px-8">
+                        <button className="flex flex-col items-center justify-center flex-shrink-0 outline-none focus:outline-none"><HiMenuAlt1/></button>
+                        <Link to='/'> <HiOutlineHome/> </Link>
+                        <button className="flex-shrink-0"> <MdOutlineAccountCircle/> </button>
                 </div>
             </div>
         </div>
