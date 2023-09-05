@@ -18,6 +18,12 @@ const Admin = () => {
             className="bg-green-500 hover:bg-green-600 text-white p-2 rounded text-center font-medium">
             Product Upload
           </Link>
+          <Link
+            to="notes"
+            className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded text-center font-medium"
+          >
+            Notes
+          </Link>
 
           {/* <Link 
             to="productsadm" 

@@ -1,89 +1,103 @@
 import React, { useEffect, useState } from 'react';
-import { fetchProductsByCategoryFromFirestore } from '../../firebase';
+import { fetchProductsByCategoryFromFirestore, getTotalNumberOfProducts } from '../../firebase';
 import ProductCard from '../product/ProductCard';
 import { SlArrowDown } from 'react-icons/sl';
+import Footer from '../common/Footer';
+import SearchComponent from '../product/SearchComponent';
+
+const PRODUCTS_PER_PAGE = 24;
 
 const Category = ({ category }) => {
-  const [allProductsLoaded, setAllProductsLoaded] = useState(false);
   const [products, setProducts] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [lastProduct, setLastProduct] = useState(null);
   const nextDivRef = React.useRef(null);
+  const [searchResults, setSearchResults] = useState([]);
 
   const categoryToBackgroundUrl = {
     'vintage': 'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fvintage.jpg?alt=media&token=a46c7ea3-0988-4307-bd54-2d31e25d6832',
     'miniature': 'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fminiature.jpg?alt=media&token=4012f362-73f8-4b5f-a371-5845355a944d',
-    'parfum': 'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fparfum.jpg?alt=media&token=6b39ae76-2c73-4cf8-9cb2-f6dc8076d85b',
+    'parfum': 'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fperfume.jpg?alt=media&token=d396d83c-5a15-40a2-8938-6fc55a31463a',
     'sample': 'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fsample.jpg?alt=media&token=35f967b0-d218-4c2e-8867-5e0a8575a48c'
   };
 
+
+  useEffect(() => {
+    const loadTotalNumberOfProducts = async () => {
+      const totalNumberOfProducts = await getTotalNumberOfProducts(category);
+      console.log(totalNumberOfProducts);
+      setTotalPages(Math.ceil(totalNumberOfProducts / PRODUCTS_PER_PAGE));
+    };
+
+    loadTotalNumberOfProducts();
+  }, [category]);
+
   useEffect(() => {
     const loadProducts = async () => {
-      const { products: fetchedProducts, lastProduct: fetchedLastProduct } = await fetchProductsByCategoryFromFirestore(category);
-      
-      const productsArray = Object.keys(fetchedProducts).map(productId => ({
-        id: productId,
-        ...fetchedProducts[productId],
-      }));
-      
-      setProducts(productsArray);
+      if (!searchResults) {
+      const { products: fetchedProducts, lastProduct: fetchedLastProduct } = await fetchProductsByCategoryFromFirestore(category, lastProduct, PRODUCTS_PER_PAGE);
+      setProducts(fetchedProducts);
       setLastProduct(fetchedLastProduct);
-
-      if (!fetchedLastProduct) {
-        setAllProductsLoaded(true);
       }
     };
 
     loadProducts();
-  }, [category]);
+  }, [currentPage, searchResults]);
 
-  const loadMoreProducts = async () => {
-    const { products: fetchedProducts, lastProduct: newLastProduct } = await fetchProductsByCategoryFromFirestore(category, lastProduct);
-    
-    const productsArray = Object.keys(fetchedProducts).map(productId => ({
-      id: productId,
-      ...fetchedProducts[productId],
-    }));
-  
-    setProducts(prevProducts => [...prevProducts, ...productsArray]);
-    setLastProduct(newLastProduct);
-  
-    if (!newLastProduct) {
-      setAllProductsLoaded(true);
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
     }
   };
 
   const backgroundImageURL = categoryToBackgroundUrl[category.toLowerCase()];
 
   return (
-    <main className=''>
+    <div className='h-screen w-screen snap-y overflow-scroll justify-center items-center'>
       <div 
-        className='flex bg-cover bg-center h-screen'
+        className='snap-start flex bg-cover bg-center items-end justify-center h-screen'
         style={{ backgroundImage: `url(${backgroundImageURL})` }}
       >
         <button 
-            className="absolute bottom-4 right-1/2 transform translate-x-1/2 cursor-pointer rounded-full bg-white bg-opacity-20 px-24 text-4xl text-white"
+            className="cursor-pointer rounded-full bg-white bg-opacity-20 px-24 text-5xl lg:mb-6 text-white"
             onClick={() => nextDivRef.current.scrollIntoView({ behavior: 'smooth' })}
           >
             <SlArrowDown />
         </button>
       </div>
-      <div className='pt-24' ref={nextDivRef}>
-        {/* <h2 className='text-2xl uppercase font-semibold my-4'>{category}</h2> */}
-        <ul className='grid grid-cols-4 gap-4'>
-        {products.map(product => (
+      <div className='snap-start pt-24' ref={nextDivRef}>
+        <SearchComponent category={category} setSearchResults={setSearchResults} />
+        <ul className='grid grid-cols-6 gap-4'>
+        {(searchResults || products).map(product => (
             <li key={product.id}>
               <ProductCard product={product} category={product.category} productId={product.id} />
             </li>
           ))}
-          
         </ul>
       </div>
-      {!allProductsLoaded && (
-      <button onClick={loadMoreProducts} className='bg-blue-200 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4'>
-        Load More
+
+      <div className="flex justify-center mb-16">
+      <button className='p-2 justify-center' onClick={goToPreviousPage} disabled={currentPage === 1}>
+        Previous
       </button>
-      )}
-      </main>
+      <div className='p-2 justify-center'>
+        Page {currentPage} of {totalPages}
+      </div>
+      <button className='p-2 justify-center' onClick={goToNextPage} disabled={currentPage === totalPages}>
+        Next
+      </button>
+      </div>
+      <div className="">
+        <Footer />
+      </div>
+      </div>
   );
 };
 

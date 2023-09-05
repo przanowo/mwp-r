@@ -5,7 +5,6 @@ const Miniature = () => {
   return (
     <div>
         <Category category='miniature' />
-        <Category category='miniatureB' />
     </div>
   )
 }

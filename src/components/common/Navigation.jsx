@@ -26,21 +26,27 @@ const Navigation = () => {
     };
 
     useEffect(() => {
+        let startedScrolling = false;
         const handleScroll = () => {
-            const offset = window.scrollY;
-            if (offset > 0) {
+            const snapContainer = document.querySelector('.snap-y');
+            const offset = snapContainer.scrollTop;
+            if (offset > 0 && !startedScrolling) {
                 setScrolled(true);
-            } else {
+            }
+
+            if (offset === 0) {
                 setScrolled(false);
+                startedScrolling = false;
             }
         };
 
         // Attach the scroll listener
-        window.addEventListener('scroll', handleScroll);
+        const snapContainer = document.querySelector('.snap-y');
+        snapContainer.addEventListener('scroll', handleScroll);
 
         // Cleanup
         return () => {
-            window.removeEventListener('scroll', handleScroll);
+            snapContainer.removeEventListener('scroll', handleScroll);
         };
     }, []);
 
@@ -66,7 +72,7 @@ const Navigation = () => {
   return (
     <nav 
         className="lg: absolute z-20 h-26 sm:h-20 lg:h-20 overflow-hidden lg:mb-6"
-        // onMouseEnter={() => setHovered(true)} // When mouse enters
+        // onMouseEnter={() => ksetHovered(true)} // When mouse enters
         // onMouseLeave={() => setHovered(false)} // When mouse leaves
         >
         <div className={fixedNavbarClasses}>
@@ -78,9 +84,11 @@ const Navigation = () => {
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop'> Shop </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/vintage'> Vintage </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/parfum'> Perfume </Link>
-                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/miniature'> Miniature </Link>
-                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/sample'> Sample </Link>
+                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/miniature'> Miniature </Link>
+                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/sample'> Sample </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/soapandpowder'> Soap & Powder </Link>
+                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/gift'> Gifts </Link>
+                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/'> Search </Link>
                 </div>
                 <div className='lg:flex hidden ltr:md:ml-6 rtl:md:mr-6 ltr:xl:ml-10 rtl:xl:mr-10 py-7'>
                     {user ? ( // If user is logged in, show logout button

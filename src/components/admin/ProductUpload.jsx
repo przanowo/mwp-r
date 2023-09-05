@@ -13,9 +13,9 @@ const ProductUpload = () => {
         mL: "",
         title: "",
         description: "",
-        descriptionnv: "",
         Year: "",
         Type: "",
+        box: "",
     });
 
     const fileInputRef = useRef(null);
@@ -64,9 +64,9 @@ const ProductUpload = () => {
                 mL: "",
                 title: "",
                 description: "",
-                descriptionnv: "",
                 Year: "",
                 Type: "",
+                box: "",
                 
             });
             setImages([]);  // This line clears the image inputs
@@ -111,8 +111,7 @@ const ProductUpload = () => {
                             onChange={handleChange}
                             required>
                             <option value="" disabled >Select an option</option>
-                            <option value="soap">Soap</option>
-                            <option value="powder">Powder</option>
+                            <option value="soapandpowder">Soap & Powder</option>
                             <option value="gift">Gift</option>
                             <option value="gold">Gold</option>
                         </select>
@@ -129,7 +128,7 @@ const ProductUpload = () => {
                             <option value="new">New</option>
                             <option value="used">Used</option>
                         </select>
-                        {['price', 'stock', 'title', 'description', 'descriptionnv',].map((field, idx) => (
+                        {['price', 'stock', 'title', 'description', ].map((field, idx) => (
                         <div key={idx} className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={field}>
                                 {field.charAt(0).toUpperCase() + field.slice(1)}:
@@ -218,6 +217,24 @@ const ProductUpload = () => {
                         <option value="vintage">Vintage</option>
                         <option value="parfum">Parfum</option>
                     </select>
+
+                    { product.category === 'miniature' && (
+                        <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="box">
+                            Miniature box:
+                        </label> 
+                        <select
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        name="category"
+                        value={product.category}
+                        onChange={handleChange}
+                        required>
+                            <option value=" " disabled >Select an option</option>
+                            <option value={false}>Miniature without box</option>
+                            <option value={true}>Miniature with box</option>
+                        </select>
+                        </div>
+                    ) }
                     <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="Type">
                         Type:
                     </label>
@@ -235,7 +252,7 @@ const ProductUpload = () => {
                     </select>
                 </div>
 
-            {['brand', 'model', 'price', 'stock', 'mL', 'title', 'description', 'descriptionnv', 'Year'].map((field, idx) => (
+            {['brand', 'model', 'price', 'stock', 'mL', 'title', 'description', 'Year'].map((field, idx) => (
                 <div key={idx} className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={field}>
                         {field.charAt(0).toUpperCase() + field.slice(1)}:

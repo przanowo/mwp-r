@@ -24,39 +24,16 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
     setEditedProduct(prev => ({ ...prev, [name]: value }));
   };
 
-  // const handleImgUpl = async () => {
-  //   let imageUrls = [];
-  //   for (let image of images) {
-  //     const imageUrl = await uploadImage(image, category);
-  //     imageUrls.push(imageUrl);
-  //   }
-
-  //   editedProduct.imageUrls = imageUrls;
-  //   editedProduct.mainImageUrl = imageUrls[mainImageIndex];
-
-  //   const response = await updateProductInFirestore(category, productId, editedProduct);
-  //   if (response.success) {
-  //     alert(response.message);
-  //     onSave(editedProduct);
-  //     onClose();
-  //   } else {
-  //     alert(`Error: ${response.message}`);
-  //   }
-  // };
-
   const handleSave = async () => {
     
     // Check if images are provided
     if (images && images.length > 0) {
         let imageUrls = [];
-        
         for (let image of images) {
             const imageUrl = await uploadImage(image, category);
             imageUrls.push(imageUrl);
         }
-        
         editedProduct.imageUrls = imageUrls;
-        
         // Set mainImageUrl only if mainImageIndex is valid
         if (typeof mainImageIndex !== 'undefined' && mainImageIndex < imageUrls.length) {
             editedProduct.mainImageUrl = imageUrls[mainImageIndex];
@@ -67,6 +44,7 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
     }
 
     const response = await updateProductInFirestore(category, productId, editedProduct);
+    // await updateProductCount(category, 'increment');
     
     if (response.success) {
         alert(response.message);
@@ -92,6 +70,7 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
 
         // console.log(category, productId)
       const response = await deleteProductFromFirestore(category, productId);
+    //   await updateProductCount(category, 'decrement');
 
       if (response.success) {
         alert(response.message);
@@ -156,11 +135,28 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
                     <option value="" disabled >Select an option</option>
                     <option value="sample">Sample</option>
                     <option value="sampleR">Sample refilled</option>
-                    <option value="miniatureB">Miniature with box</option>
-                    <option value="miniature">Miniature without box</option>
+                    {/* <option value="miniatureB">Miniature with box</option> */}
+                    <option value="miniature">Miniature</option>
                     <option value="vintage">Vintage</option>
                 </select>
             </div>
+            { product.category === 'miniature' && (
+                        <div className="flex items-center space-x-2">
+                        <label className="w-1/4 text-right font-medium" htmlFor="box">
+                            Miniature box:
+                        </label> 
+                        <select
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        name="category"
+                        value={product.category}
+                        onChange={handleChange}
+                        required>
+                            <option value="" disabled >Select an option</option>
+                            <option value={false}>Miniature without box</option>
+                            <option value={true}>Miniature with box</option>
+                        </select>
+                        </div>
+                    ) }
             <div className="flex items-center space-x-2">
                 <label className="w-1/4 text-right font-medium">Type:</label>
                 <select
@@ -208,10 +204,6 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
             <div className="flex items-start space-x-2 mt-4">
                 <label className="w-1/4 text-right align-top font-medium">Description:</label>
                 <textarea className="border p-2 flex-grow rounded h-32  w-full" name="description" value={editedProduct.description} onChange={handleInputChange} placeholder="Description"></textarea>
-            </div>
-            <div className="flex items-start space-x-2 mt-4">
-                <label className="w-1/4 text-right align-top font-medium">Description NOT VISIBLE:</label>
-                <textarea className="border p-2 flex-grow rounded h-32  w-full" name="descriptionnv" value={editedProduct.descriptionnv} onChange={handleInputChange} placeholder="Descriptio NOT VISIBLEn"></textarea>
             </div>
             <div className="flex items-center space-x-2">
                 <label className="w-1/4 text-right font-medium">Images:</label>

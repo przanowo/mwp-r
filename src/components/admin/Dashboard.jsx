@@ -23,7 +23,7 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold mb-4">Product Counts by Category</h1>
         <ul className="bg-white p-4 rounded shadow-md space-y-2">
           {Object.keys(products).map(category => (
-            console.log('category', category),
+            
             <li key={category} className="flex justify-between">
               <span className="capitalize">{category}</span>
               <span>{Object.keys(products[category]).length}</span>

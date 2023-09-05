@@ -52,7 +52,7 @@ const Product = () => {
 
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-md">
+    <div className="mt-24 p-6 bg-white shadow-lg rounded-md">
       <div className="flex">
         <div className="w-1/2 pr-4">
           <img src={product.mainImageUrl} alt={product.title} className="w-full h-96 object-cover mb-4 rounded-md" />
@@ -64,13 +64,11 @@ const Product = () => {
         </div>
         <div className="w-1/2 pl-4">
           <h2 className="text-2xl font-bold mb-2">{product.title}</h2>
+          <p className="mb-2"> {product.brand} {product.model} {product.mL ? product.mL+'ml' : null}</p>
           <p className="text-gray-600 mb-4">{product.description}</p>
           <p className="text-xl font-bold mb-2">${product.price}</p>
-          <p className="mb-2"> {product.brand} {product.model} {product.mL ? product.mL+'ml' : null}</p>
           {/* <p className="mb-2"><span className="font-semibold">Brand:</span> {product.brand}</p> */}
           {/* <p className="mb-2">{product.ml} ml</p> */}
-        </div>
-        <div className="mt-4">
           <button className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition duration-200" onClick={handleAddToCart}>
             Add to cart
           </button>

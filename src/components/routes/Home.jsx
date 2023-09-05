@@ -1,5 +1,6 @@
 import React from 'react';
 import { SlArrowDown } from 'react-icons/sl';
+import Footer from '../common/Footer';
 
 const Home = () => {
   const nextDivRef = React.useRef(null);
@@ -13,35 +14,24 @@ const Home = () => {
       //   </div>
       // </main>
 
-    <main className="">
-      <div className='flex bg-cover bg-center h-screen bg-[url(https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fmpq-bg.jpg?alt=media&token=68c2375b-3f6c-4bae-9cab-536a93e035f4)]'>
+    <div className="h-screen w-screen snap-y overflow-scroll">
+      <div className='flex snap-start justify-center items-end bg-cover bg-center h-screen bg-[url(https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fmpq-bg.jpg?alt=media&token=68c2375b-3f6c-4bae-9cab-536a93e035f4)]'>
       <button 
-          className="absolute bottom-4 right-1/2 transform translate-x-1/2 cursor-pointer rounded-full bg-white bg-opacity-20 px-24 text-4xl text-white"
+          className="cursor-pointer rounded-full bg-white bg-opacity-30 px-28  text-5xl text-white lg:mb-6 flex"
           onClick={() => nextDivRef.current.scrollIntoView({ behavior: 'smooth' })}
         >
           <SlArrowDown />
         </button>
-
       </div>
-      <div ref={nextDivRef} className=''>
-
+      <div ref={nextDivRef} className='flex w-screen h-screen snap-start'>
+        <div className="flex w-screen  items-center m-auto justify-centergb-cover bg-center h-screen bg-no-repeat bg-[url(https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2FYour%20paragraph%20text.jpg?alt=media&token=580f3669-6235-40b7-a091-48118521861a)]">
+          <p className='w-2/5 text-lg text-left justify-center lg:pl-5'>Discover a World of Scents! 🌸 Dive into our exquisite collection of miniature fragrances, timeless vintage perfumes, and contemporary aromatic wonders. Every drop tells a story, every scent is a journey. Find your signature or relive a memory. Welcome to Mini Parfum Queen where elegance is bottled.</p>
+        </div>
+      </div>
+      <div className="snap-start">
+        <Footer />
+      </div>
     </div>
-      <div className="flex flex-row items-center bg-gray-300 text-black text-xl my-28 ">
-        <div className='flex'>
-          <img src="https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2F28.png?alt=media&token=81aee1b0-e27a-4bb7-a18c-e3a2f63fd2c1" alt="img1" />
-        </div>
-        <div className='flex'>
-          <p className='text-center'>  Discover a World of Scents! 🌸 Dive into our exquisite collection of miniature fragrances, timeless vintage perfumes, and contemporary aromatic wonders. Every drop tells a story, every scent is a journey. Find your signature or relive a memory. Welcome to Mini Parfum Queen where elegance is bottled.</p>
-        </div>
-        <div className='flex' >
-          <img src="https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2F27.png?alt=media&token=1b560eb6-41b9-4935-bc9e-5142f86c0cb9" alt="" />
-        </div>
-      </div>
-
-      <div className="flex">
-        
-      </div>
-    </main>
   );
 };
 

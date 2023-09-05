@@ -12,7 +12,9 @@ import { getFirestore,
   query,
   limit,
   orderBy,
-  startAfter
+  startAfter,
+  getCountFromServer,
+  where,
 
 
 } from 'firebase/firestore';
@@ -41,30 +43,7 @@ const storage = getStorage(app);
 
 const googleProvider = new GoogleAuthProvider();
 
-export const copyProductsAndAddField = async () => {
-  try {
-    // Fetch all products from the source collection
-    const sourceCollectionPath = 'products/miniatureB/product';
-    const sourceCollectionRef = collection(firestore, sourceCollectionPath);
-    const sourceSnapshot = await getDocs(sourceCollectionRef);
 
-    // Copy each product to the destination collection
-    const destinationCollectionPath = 'products/miniature/product';
-    sourceSnapshot.forEach(async (docSnapshot) => {
-      const productData = docSnapshot.data();
-      // Add a new boolean field 'box' with value 'true'
-      productData.box = true;
-
-      // Add the product data to the destination collection
-      await addDoc(collection(firestore, destinationCollectionPath), productData);
-    });
-    
-    return { success: true, message: 'Products copied successfully!' };
-  } catch (error) {
-    console.error("Error copying products:", error);
-    return { success: false, message: error.message };
-  }
-};
 
 export const createUserDocumentFromAuth = async (
   userAuth,
@@ -173,8 +152,32 @@ export const uploadImage = async (file, folderName) => {
     );
   });
 };
+// export const updateProductTitles = async () => {
+//   const firestore = getFirestore();
+//   const productCategories = ['vintage', 'miniature', 'sample', 'parfum', 'gold', 'gift', 'soapandpowder'];
+
+//   for (const category of productCategories) {
+//     const productsRef = collection(firestore, 'products', category, 'product');
+//     const snapshot = await getDocs(productsRef);
+
+//     const batch = writeBatch(firestore);
+
+//     snapshot.docs.forEach(docSnap => {
+//       const data = docSnap.data();
+//       if (data.title) {
+//         const newField = { titleLowCase: data.title.toLowerCase() };
+//         const docRef = doc(firestore, 'products', category, 'product', docSnap.id);
+//         batch.update(docRef, newField);
+//       }
+//     });
+    
+//     await batch.commit();
+//   }
+
+//   console.log('Titles updated successfully');
+// };
 export const fetchProductsFromFirestore = async (lastVisibleProducts = {}) => {
-  const productCategories = ['vintage', 'miniature', 'sample', 'parfum', 'gold', 'powder', 'gift', 'soap'];
+  const productCategories = ['vintage', 'miniature', 'sample', 'parfum', 'gold',  'gift', 'soapandpowder'];
   const allProducts = {};
   const newLastVisibleProducts = {};
 
@@ -182,7 +185,7 @@ export const fetchProductsFromFirestore = async (lastVisibleProducts = {}) => {
     let q = query(
       collection(firestore, 'products', category, 'product'),
       orderBy('title', 'desc'),
-      limit(4)
+      limit(6)
     );
     if (lastVisibleProducts[category]) {
       q = query(
@@ -206,7 +209,6 @@ export const fetchProductsFromFirestore = async (lastVisibleProducts = {}) => {
     lastVisible: newLastVisibleProducts
   };
 };
-
 export const fetchProductFromFirestore = async (category, productId)  => {
   const productRef = doc(firestore, 'products', category, 'product', productId);
   const productDoc = await getDoc(productRef);
@@ -219,35 +221,63 @@ export const fetchProductFromFirestore = async (category, productId)  => {
       id: productDoc.id,
       ...productDoc.data(),
   };
-}
-
-
-export const fetchProductsByCategoryFromFirestore = async (category, lastVisibleProduct = null) => {
+};
+export const fetchProductsByCategoryFromFirestore = async (category, lastVisibleProduct = null, limitNum ) => {
   let q = query(
     collection(firestore, 'products', category, 'product'),
     orderBy('title', 'desc'),
-    limit(10)
+    limit(limitNum)
   );
+
   if (lastVisibleProduct) {
     q = query(
       collection(firestore, 'products', category, 'product'),
       orderBy('title', 'desc'),
       startAfter(lastVisibleProduct),
-      limit(10)
+      limit(limitNum)
     );
   }
+
   const querySnapshot = await getDocs(q);
-  const products = {};
+  const products = [];
   querySnapshot.forEach(doc => {
-    products[doc.id] = doc.data();
+    products.push({ id: doc.id, ...doc.data() });
   });
+
   const lastProduct = querySnapshot.docs[querySnapshot.docs.length - 1];
   return {
     products,
     lastProduct,
   };
 };
+export const getTotalNumberOfProducts = async (category) => {
+  const coll = collection(firestore, "products", category, "product");
+  const snapshot = await getCountFromServer(coll);
+  console.log('count: ', snapshot.data().count);
 
+  return snapshot.data().count;
+};
+export const searchProductsByTitle = async (category, searchTerm) => {
+  try {
+
+    console.log(searchTerm);
+    const productRef = collection(firestore, 'products', category, 'product');
+    const q = query(
+      productRef,
+      where('titleLowCase', '>=', searchTerm),
+      where('titleLowCase', '<=', searchTerm + '\uf8ff') // to search startWith title
+    );
+    const querySnapshot = await getDocs(q);
+    const products = [];
+    console.log(products);
+    querySnapshot.forEach((doc) => {
+      products.push({ id: doc.id, ...doc.data() });
+    });
+    return { success: true, data: products };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
 export const addProductToUserCollection = async (userId, productId, product) => {
   // // console.log(product);
   const userProductRef = doc(firestore, 'users', userId, 'products', productId);
@@ -346,3 +376,51 @@ export const deleteImageFromGSC = async (imageUrl) => {
     return { success: false, message: error.message };
   }
 };
+export const addNoteToFirestore = async (note) => {
+  try {
+    await addDoc(collection(firestore, 'notes'), note);
+    return { success: true, message: 'Note added successfully!' };
+  } catch (error) {
+    console.error("Error adding note:", error);
+    return { success: false, message: error.message };
+  }
+}
+export const fetchNotesFromFirestore = async () => {
+  const notesRef = collection(firestore, 'notes');
+  const notesSnapshot = await getDocs(notesRef);
+
+  const notes = [];
+  notesSnapshot.forEach(doc => {
+    notes.push({ ...doc.data(), id: doc.id });
+  });
+
+  return notes;
+}
+export const deleteNoteFromFirestore = async (noteId) => {
+  const noteRef = doc(firestore, 'notes', noteId);
+  if (!noteId) {
+    console.log('Note ID is missing!');
+    return;
+  }
+  try {
+    await deleteDoc(noteRef);
+    return { success: true, message: 'Note deleted successfully!' };
+  } catch (error) {
+    console.log("Error deleting note:", error);
+    return { success: false, message: error.message };
+  }
+}
+export const updateNoteInFirestore = async (noteId, updatedData) => {
+  const noteRef = doc(firestore, 'notes', noteId);
+  if (!noteId) {
+    console.log('Note ID is missing!');
+    return;
+  }
+  try {
+    await updateDoc(noteRef, updatedData);
+    return { success: true, message: 'Note updated successfully!' };
+  } catch (error) {
+    console.error("Error updating note:", error);
+    return { success: false, message: error.message };
+  }
+}
