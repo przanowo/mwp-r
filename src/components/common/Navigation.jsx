@@ -81,14 +81,14 @@ const Navigation = () => {
 
 {/* //desktop menu */}
                 <div className="flex text-center items-center">
-                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop'> Shop </Link>
+                    {/* <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop'> Shop </Link> */}
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/vintage'> Vintage </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/parfum'> Perfume </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/miniature'> Miniature </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/sample'> Sample </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/soapandpowder'> Soap & Powder </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/gift'> Gifts </Link>
-                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/'> Search </Link>
+                    {/* <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/'> Search </Link> */}
                 </div>
                 <div className='lg:flex hidden ltr:md:ml-6 rtl:md:mr-6 ltr:xl:ml-10 rtl:xl:mr-10 py-7'>
                     {user ? ( // If user is logged in, show logout button
