@@ -55,9 +55,9 @@ const Product = () => {
     <div className="mt-24 p-6 bg-white shadow-lg rounded-md">
       <div className="flex">
         <div className="w-1/2 pr-4">
-          <img src={product.mainImageUrl} alt={product.title} className="w-full h-96 object-cover mb-4 rounded-md" />
+          <img src={product.mainImage} alt={product.title} className="w-full h-96 object-cover mb-4 rounded-md" />
           <div className="grid grid-cols-3 gap-2">
-            {product.imageUrls.map((url, idx) => (
+            {product.images.map((url, idx) => (
               <img key={idx} src={url} alt={`Product ${idx}`} className="w-full h-24 object-cover rounded-md" />
             ))}
           </div>

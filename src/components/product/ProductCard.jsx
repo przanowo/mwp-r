@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { CartContext } from '../../hooks/CartContext';
 import EditProductModal from '../admin/EditProductModal';  // import the modal component
 
-const ProductCard = ({ product, category, productId }) => {
+const ProductCard = ({ product, productId }) => {
   const { user } = React.useContext(AuthContext); // Get the user from AuthContext
   const { addToCart } = useContext(CartContext);
   const [currentProduct, setCurrentProduct] = useState(product);
@@ -12,7 +12,7 @@ const ProductCard = ({ product, category, productId }) => {
 
   const handleAddToCart = () => {
     console.log(productId);
-    addToCart(product, category, productId); // assuming product object has an 'id' property which is equal to 'productId'
+    addToCart(product, productId); // assuming product object has an 'id' property which is equal to 'productId'
   };
 
 
@@ -34,9 +34,9 @@ const ProductCard = ({ product, category, productId }) => {
 
   return (
       <div key={productId} className="border p-4 rounded-md hover:shadow-lg transition-shadow duration-300">
-        <Link to={`/shop/${category}/${productId}`} key={productId}>
+        <Link to={`/shop/${productId}`} key={productId}>
         <div className=" bg-gray-200 overflow-hidden rounded-md">
-          <img src={currentProduct.mainImageUrl} alt={currentProduct.title} className="object-cover h-full w-full" />
+          <img src={currentProduct.mainImage} alt={currentProduct.title} className="object-cover h-full w-full" />
         </div>
 
         <div className="mt-4">
@@ -62,7 +62,6 @@ const ProductCard = ({ product, category, productId }) => {
           product={currentProduct} 
           onClose={handleCloseModal} 
           onSave={handleSaveProduct}
-          category={category}
           productId={productId}
         />
       }

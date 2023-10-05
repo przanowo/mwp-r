@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { updateProducts } from '../../firebase';
 
 const Admin = () => {
   return (
@@ -24,6 +25,9 @@ const Admin = () => {
           >
             Notes
           </Link>
+          {/* <button className='bg-red-500 hover:bg-red-600 text-white p-2 rounded text-center font-medium' onClick={updateProducts}>
+            Trigger data update.
+          </button> */}
 
           {/* <Link 
             to="productsadm" 

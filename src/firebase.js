@@ -119,8 +119,14 @@ export const updateUserDetails = async (userId, details) => {
 };
 export const addProductToFirestore = async (product) => {
   try {
-    await addDoc(collection(firestore, 'products', product.category, 'product'), product);
-    console.log('product', product)
+    // Add the titleLowCase field, set as the title but in lowercase
+    const modifiedProduct = {
+      ...product,
+      titleLowCase: product.title.toLowerCase(),
+    };
+
+    await addDoc(collection(firestore, 'products', product.category, 'product'), modifiedProduct);
+    console.log('product', modifiedProduct);
     return { success: true, message: 'Product added successfully!' };
   } catch (error) {
     console.error("Error adding product:", error);
@@ -152,6 +158,111 @@ export const uploadImage = async (file, folderName) => {
     );
   });
 };
+export const fetchProductsFromFirestore = async (lastVisibleProducts = {}) => {
+  const productCategories = ['vintage', 'miniature', 'sample', 'perfume', 'gold', 'gift', 'soapandpowder'];
+  const allProducts = {};
+  const newLastVisibleProducts = {};
+
+  for (const category of productCategories) {
+      let q = query(
+          collection(firestore, 'products'),
+          where('category', '==', category),
+          orderBy('title', 'desc'),
+          limit(6)
+      );
+      if (lastVisibleProducts[category]) {
+          q = query(
+              collection(firestore, 'products'),
+              where('category', '==', category),
+              orderBy('title', 'desc'),
+              startAfter(lastVisibleProducts[category]),
+              limit(4)
+          );
+      }
+
+      const querySnapshot = await getDocs(q);
+      allProducts[category] = {};
+      querySnapshot.forEach(doc => {
+          allProducts[category][doc.id] = doc.data();
+      });
+      newLastVisibleProducts[category] = querySnapshot.docs[querySnapshot.docs.length - 1];
+  }
+
+  return {
+      allProducts,
+      lastVisible: newLastVisibleProducts
+  };
+};
+
+export const fetchProductFromFirestore = async (category, productId) => {
+  const productRef = doc(firestore, 'products', productId);
+  const productDoc = await getDoc(productRef);
+
+  if (!productDoc.exists) {
+      return null;
+  }
+
+  return {
+      id: productDoc.id,
+      ...productDoc.data(),
+  };
+};
+
+export const fetchProductsByCategoryFromFirestore = async (category, lastVisibleProduct = null, limitNum) => {
+  let q = query(
+      collection(firestore, 'products'),
+      where('category', '==', category),
+      orderBy('title', 'desc'),
+      limit(limitNum)
+  );
+
+  if (lastVisibleProduct) {
+      q = query(
+          collection(firestore, 'products'),
+          where('category', '==', category),
+          orderBy('title', 'desc'),
+          startAfter(lastVisibleProduct),
+          limit(limitNum)
+      );
+  }
+
+  const querySnapshot = await getDocs(q);
+  const products = [];
+  querySnapshot.forEach(doc => {
+      products.push({ id: doc.id, ...doc.data() });
+  });
+
+  const lastProduct = querySnapshot.docs[querySnapshot.docs.length - 1];
+  return {
+      products,
+      lastProduct,
+  };
+};
+
+export const getTotalNumberOfProducts = async (category) => {
+  // Note: Firebase doesn't provide a direct way to count the number of documents in a collection. 
+  // You might need to have a separate cloud function to maintain a count or use a different strategy.
+};
+
+export const searchProductsByTitle = async (category, searchTerm) => {
+  try {
+      const q = query(
+          collection(firestore, 'products'),
+          where('category', '==', category),
+          where('titleLowCase', '>=', searchTerm),
+          where('titleLowCase', '<=', searchTerm + '\uf8ff')
+      );
+      const querySnapshot = await getDocs(q);
+      const products = [];
+      querySnapshot.forEach((doc) => {
+          products.push({ id: doc.id, ...doc.data() });
+      });
+      return { success: true, data: products };
+  } catch (error) {
+      return { success: false, message: error.message };
+  }
+};
+
 // export const updateProductTitles = async () => {
 //   const firestore = getFirestore();
 //   const productCategories = ['vintage', 'miniature', 'sample', 'parfum', 'gold', 'gift', 'soapandpowder'];
@@ -176,108 +287,108 @@ export const uploadImage = async (file, folderName) => {
 
 //   console.log('Titles updated successfully');
 // };
-export const fetchProductsFromFirestore = async (lastVisibleProducts = {}) => {
-  const productCategories = ['vintage', 'miniature', 'sample', 'parfum', 'gold',  'gift', 'soapandpowder'];
-  const allProducts = {};
-  const newLastVisibleProducts = {};
+// export const fetchProductsFromFirestore = async (lastVisibleProducts = {}) => {
+//   const productCategories = ['vintage', 'miniature', 'sample', 'parfum', 'gold',  'gift', 'soapandpowder'];
+//   const allProducts = {};
+//   const newLastVisibleProducts = {};
 
-  for (const category of productCategories) {
-    let q = query(
-      collection(firestore, 'products', category, 'product'),
-      orderBy('title', 'desc'),
-      limit(6)
-    );
-    if (lastVisibleProducts[category]) {
-      q = query(
-        collection(firestore, 'products', category, 'product'),
-        orderBy('title', 'desc'),
-        startAfter(lastVisibleProducts[category]),
-        limit(4)
-      );
-    }
+//   for (const category of productCategories) {
+//     let q = query(
+//       collection(firestore, 'products', category, 'product'),
+//       orderBy('title', 'desc'),
+//       limit(6)
+//     );
+//     if (lastVisibleProducts[category]) {
+//       q = query(
+//         collection(firestore, 'products', category, 'product'),
+//         orderBy('title', 'desc'),
+//         startAfter(lastVisibleProducts[category]),
+//         limit(4)
+//       );
+//     }
 
-    const querySnapshot = await getDocs(q);
-    allProducts[category] = {};
-    querySnapshot.forEach(doc => {
-      allProducts[category][doc.id] = doc.data();
-    });
-    newLastVisibleProducts[category] = querySnapshot.docs[querySnapshot.docs.length - 1];
-  }
+//     const querySnapshot = await getDocs(q);
+//     allProducts[category] = {};
+//     querySnapshot.forEach(doc => {
+//       allProducts[category][doc.id] = doc.data();
+//     });
+//     newLastVisibleProducts[category] = querySnapshot.docs[querySnapshot.docs.length - 1];
+//   }
 
-  return {
-    allProducts,
-    lastVisible: newLastVisibleProducts
-  };
-};
-export const fetchProductFromFirestore = async (category, productId)  => {
-  const productRef = doc(firestore, 'products', category, 'product', productId);
-  const productDoc = await getDoc(productRef);
+//   return {
+//     allProducts,
+//     lastVisible: newLastVisibleProducts
+//   };
+// };
+// export const fetchProductFromFirestore = async (category, productId)  => {
+//   const productRef = doc(firestore, 'products', category, 'product', productId);
+//   const productDoc = await getDoc(productRef);
 
-  if (!productDoc.exists) {
-      return null;
-  }
+//   if (!productDoc.exists) {
+//       return null;
+//   }
 
-  return {
-      id: productDoc.id,
-      ...productDoc.data(),
-  };
-};
-export const fetchProductsByCategoryFromFirestore = async (category, lastVisibleProduct = null, limitNum ) => {
-  let q = query(
-    collection(firestore, 'products', category, 'product'),
-    orderBy('title', 'desc'),
-    limit(limitNum)
-  );
+//   return {
+//       id: productDoc.id,
+//       ...productDoc.data(),
+//   };
+// };
+// export const fetchProductsByCategoryFromFirestore = async (category, lastVisibleProduct = null, limitNum ) => {
+//   let q = query(
+//     collection(firestore, 'products', category, 'product'),
+//     orderBy('title', 'desc'),
+//     limit(limitNum)
+//   );
 
-  if (lastVisibleProduct) {
-    q = query(
-      collection(firestore, 'products', category, 'product'),
-      orderBy('title', 'desc'),
-      startAfter(lastVisibleProduct),
-      limit(limitNum)
-    );
-  }
+//   if (lastVisibleProduct) {
+//     q = query(
+//       collection(firestore, 'products', category, 'product'),
+//       orderBy('title', 'desc'),
+//       startAfter(lastVisibleProduct),
+//       limit(limitNum)
+//     );
+//   }
 
-  const querySnapshot = await getDocs(q);
-  const products = [];
-  querySnapshot.forEach(doc => {
-    products.push({ id: doc.id, ...doc.data() });
-  });
+//   const querySnapshot = await getDocs(q);
+//   const products = [];
+//   querySnapshot.forEach(doc => {
+//     products.push({ id: doc.id, ...doc.data() });
+//   });
 
-  const lastProduct = querySnapshot.docs[querySnapshot.docs.length - 1];
-  return {
-    products,
-    lastProduct,
-  };
-};
-export const getTotalNumberOfProducts = async (category) => {
-  const coll = collection(firestore, "products", category, "product");
-  const snapshot = await getCountFromServer(coll);
-  console.log('count: ', snapshot.data().count);
+//   const lastProduct = querySnapshot.docs[querySnapshot.docs.length - 1];
+//   return {
+//     products,
+//     lastProduct,
+//   };
+// };
+// export const getTotalNumberOfProducts = async (category) => {
+//   const coll = collection(firestore, "products", category, "product");
+//   const snapshot = await getCountFromServer(coll);
+//   console.log('count: ', snapshot.data().count);
 
-  return snapshot.data().count;
-};
-export const searchProductsByTitle = async (category, searchTerm) => {
-  try {
+//   return snapshot.data().count;
+// };
+// export const searchProductsByTitle = async (category, searchTerm) => {
+//   try {
 
-    console.log(searchTerm);
-    const productRef = collection(firestore, 'products', category, 'product');
-    const q = query(
-      productRef,
-      where('titleLowCase', '>=', searchTerm),
-      where('titleLowCase', '<=', searchTerm + '\uf8ff') // to search startWith title
-    );
-    const querySnapshot = await getDocs(q);
-    const products = [];
-    console.log(products);
-    querySnapshot.forEach((doc) => {
-      products.push({ id: doc.id, ...doc.data() });
-    });
-    return { success: true, data: products };
-  } catch (error) {
-    return { success: false, message: error.message };
-  }
-};
+//     console.log(searchTerm);
+//     const productRef = collection(firestore, 'products', category, 'product');
+//     const q = query(
+//       productRef,
+//       where('titleLowCase', '>=', searchTerm),
+//       where('titleLowCase', '<=', searchTerm + '\uf8ff') // to search startWith title
+//     );
+//     const querySnapshot = await getDocs(q);
+//     const products = [];
+//     console.log(products);
+//     querySnapshot.forEach((doc) => {
+//       products.push({ id: doc.id, ...doc.data() });
+//     });
+//     return { success: true, data: products };
+//   } catch (error) {
+//     return { success: false, message: error.message };
+//   }
+// };
 export const addProductToUserCollection = async (userId, productId, product) => {
   // // console.log(product);
   const userProductRef = doc(firestore, 'users', userId, 'products', productId);
@@ -424,3 +535,35 @@ export const updateNoteInFirestore = async (noteId, updatedData) => {
     return { success: false, message: error.message };
   }
 }
+
+
+// export const  updateProducts = async () =>  {
+//   try {
+//     // Reference to the products collection
+//     const productsCollection = collection(firestore, "products");
+
+//     // Fetch all products
+//     const productsSnapshot = await getDocs(productsCollection);
+//     console.log(productsSnapshot.docs);
+    
+//     for (const productDoc of productsSnapshot.docs) {
+//       const productData = productDoc.data();
+      
+//       let changes = {
+//         magazine: 'NL'  // Add the new key-value pair
+//       };
+
+//       // If the "sex" key is not set or is null, assign it the value "women"
+//       if (!productData.sex) {
+//         console.log(productData)
+//         changes.sex = 'women';
+//       }
+      
+//       // Update the document in Firestore
+//       await updateDoc(doc(firestore, "products", productDoc.id), changes);
+//     }
+//   } catch (error) {
+//     console.error("An error occurred while updating products:", error);
+//     // You might also want to display a notification to the user or log the error to an error reporting service.
+//   }
+// }

@@ -42,7 +42,7 @@ function App() {
     { path: '/test', component: <Test /> },
     { path: '/account', component: <Account /> },
     { path: '/shop', component: <Shop /> },
-    { path: '/shop/:category/:productId', component: <Product /> },
+    { path: '/shop/:productId', component: <Product /> },
     { path: '/shop/:category', component: <Category /> },
     // { path: '/miniature', component: <Miniature /> },
     // { path: '/sample', component: <Sample /> },
@@ -67,7 +67,7 @@ function App() {
         {/* If no matching route is found, render the Home component */}
         <Route path="*" element={<Home />} />
         <Route path="/shop/vintage/" element={<Category category='vintage' />} />
-        <Route path="/shop/parfum/" element={<Category category='parfum' />} />
+        <Route path="/shop/parfum/" element={<Category category='perfume' />} />
         <Route path="/shop/sample/" element={<Category category='sample' />} />
         <Route path="/shop/miniature/" element={<Category category='miniature' />} />
         <Route path="/shop/soapandpowder/" element={<Category category='SoapPowder' />} />
