@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 
 
-const EditProductModal = ({ product, onClose, onSave, productId, category }) => {
+const EditProductModal = ({ product, onClose, onSave, productId }) => {
   const [editedProduct, setEditedProduct] = useState(product);
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,7 +30,7 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
     if (images && images.length > 0) {
         let imageUrls = [];
         for (let image of images) {
-            const imageUrl = await uploadImage(image, category);
+            const imageUrl = await uploadImage(image);
             imageUrls.push(imageUrl);
         }
         editedProduct.imageUrls = imageUrls;
@@ -43,7 +43,7 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
         }
     }
 
-    const response = await updateProductInFirestore(category, productId, editedProduct);
+    const response = await updateProductInFirestore(productId, editedProduct);
     // await updateProductCount(category, 'increment');
     
     if (response.success) {
@@ -69,7 +69,7 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
           }
 
         // console.log(category, productId)
-      const response = await deleteProductFromFirestore(category, productId);
+      const response = await deleteProductFromFirestore(productId);
     //   await updateProductCount(category, 'decrement');
 
       if (response.success) {
@@ -83,7 +83,7 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
   };
   const onDelete = () => {
     try {
-        navigate(`/shop/${category}`);
+        navigate(`/`);
         
     } catch {
         navigate(-1);
@@ -98,49 +98,132 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
         <div className="space-y-4">
             { /* This structure can be repeated for each input group */ }
             <div className="flex items-center space-x-2">
-                <label className="w-1/4 text-right font-medium">Condition:</label>
-                <select
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    name="cond"
-                    value={editedProduct.cond}
-                    onChange={handleChange}
-                    required>
-                    <option value="" disabled >Select an option</option>
-                    <option value="new">New</option>
-                    <option value="used">Used</option>
-                </select>
-            </div>
-            <div className="flex items-center space-x-2">
-                <label className="w-1/4 text-right font-medium">Sex:</label>
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="sex">
+                    Sex:
+                </label>
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="sex"
-                    value={editedProduct.sex}
+                    value={product.sex}
                     onChange={handleChange}
                     required>
                     <option value="" disabled >Select an option</option>
-                    <option value="man">Man</option>
-                    <option value="woman">Woman</option>
+                    <option value="men">Man</option>
+                    <option value="women">Woman</option>
                     <option value="unisex">Unisex</option>
                 </select>
             </div>
             <div className="flex items-center space-x-2">
-                <label className="w-1/4 text-right font-medium">Category:</label>
+                <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="category">
+                    Category:
+                </label>
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="category"
-                    value={editedProduct.category}
+                    value={product.category}
                     onChange={handleChange}
                     required>
                     <option value="" disabled >Select an option</option>
                     <option value="sample">Sample</option>
-                    <option value="sampleR">Sample refilled</option>
-                    {/* <option value="miniatureB">Miniature with box</option> */}
                     <option value="miniature">Miniature</option>
-                    <option value="vintage">Vintage</option>
+                    <option value="perfume">Parfum</option>
+                    <option value="soap">Soap & Powder</option>
+                    <option value="gifts">Gifts</option>
                 </select>
             </div>
-            { product.category === 'miniature' && (
+            <div className="flex items-center space-x-2">
+                <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="nowe">
+                    Condition:
+                </label>
+                <select
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="nowe"
+                    value={product.nowe}
+                    onChange={handleChange}
+                    required>
+                    <option value="" disabled >Select an option</option>
+                    <option value="yes">New</option>
+                    <option value="no">Used</option>
+                </select>
+            </div>
+            <div className="flex items-center space-x-2">
+                <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="typ">
+                    Type:
+                </label>
+                <select
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="typ"
+                    value={product.typ}
+                    onChange={handleChange}
+                    required>
+                    <option value="" disabled >Select an option</option>
+                    <option value="edt">Eau de Toilette</option>
+                    <option value="edp">Eau de Parfum</option>
+                    <option value="edc">Eau de Cologne</option>
+                    <option value="parfum">Parfum</option>
+                </select>
+            </div>
+            <div className="flex items-center space-x-2">
+                <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="show">
+                    Show:
+                </label>
+                <select
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="show"
+                    value={product.show}
+                    onChange={handleChange}
+                    required>
+                    <option value="" disabled >Select an option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            {/* <div className="flex items-center space-x-2">
+                <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="magazine">
+                    Magazine:
+                </label>
+                <select
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="magazine"
+                    value={product.magazine}
+                    onChange={handleChange}
+                    required>
+                    <option value="" disabled >Select an option</option>
+                    <option value="NL">NL</option>
+                    <option value="HU">HU</option>
+                </select>
+            </div> */}
+            <div className="flex items-center space-x-2">
+                <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="liked">
+                    Liked:
+                </label>
+                <select
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="liked"
+                    value={product.liked}
+                    onChange={handleChange}
+                    required>
+                    <option value="" disabled >Select an option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <div className="flex items-center space-x-2">
+                <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="featured">
+                    Featured:
+                </label>
+                <select
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    name="featured"
+                    value={product.featured}
+                    onChange={handleChange}
+                    required>
+                    <option value="" disabled >Select an option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            {/* { product.category === 'miniature' && (
                         <div className="flex items-center space-x-2">
                         <label className="w-1/4 text-right font-medium" htmlFor="box">
                             Miniature box:
@@ -156,55 +239,38 @@ const EditProductModal = ({ product, onClose, onSave, productId, category }) => 
                             <option value={true}>Miniature with box</option>
                         </select>
                         </div>
-                    ) }
+                    ) } */}
+
             <div className="flex items-center space-x-2">
-                <label className="w-1/4 text-right font-medium">Type:</label>
-                <select
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    name="Type"
-                    value={editedProduct.Type}
-                    onChange={handleChange}
-                    required>
-                    <option value="" disabled >Select an option</option>
-                    <option value="edt">Eau de Toilette</option>
-                    <option value="edp">Eau de Parfum</option>
-                    <option value="parfum">Parfum</option>
-                </select>
+                <label className="w-1/4 text-right font-medium">Title:</label>
+                <input className="border p-2 flex-grow rounded w-full" type="text" name="title" value={editedProduct.title} onChange={handleInputChange} placeholder="Title" />
             </div>
             <div className="flex items-center space-x-2">
-                <label className="w-1/4 text-right font-medium">Brand:</label>
-                <input className="border p-2 flex-grow rounded w-full" type="text" name="brand" value={editedProduct.brand} onChange={handleInputChange} placeholder="Brand" />
-            </div>
-            <div className="flex items-center space-x-2">
-                <label className="w-1/4 text-right font-medium">Model:</label>
-                <input className="border p-2 flex-grow rounded w-full" type="text" name="model" value={editedProduct.model} onChange={handleInputChange} placeholder="Model" />
+                <label className="w-1/4 text-right font-medium">Description:</label>
+                <input className="border p-2 flex-grow rounded w-full" type="text" name="description" value={editedProduct.description} onChange={handleInputChange} placeholder="Description" />
             </div>
             <div className="flex items-center space-x-2">
                 <label className="w-1/4 text-right font-medium">Price:</label>
                 <input className="border p-2 flex-grow rounded w-full" type="number" name="price" value={editedProduct.price} onChange={handleInputChange} placeholder="Price" />
             </div>
             <div className="flex items-center space-x-2">
-              <label className="w-1/4 text-right font-medium">Stock:</label>
-              <input className="border p-2 flex-grow rounded w-full" type="number" name="stock" value={editedProduct.stock} onChange={handleInputChange} placeholder="Stock" />
+              <label className="w-1/4 text-right font-medium">Size:</label>
+              <input className="border p-2 flex-grow rounded w-full" type="number" name="size" value={editedProduct.size} onChange={handleInputChange} placeholder="Size" />
             </div>
             <div className="flex items-center space-x-2">
-                <label className="w-1/4 text-right font-medium">Size:</label>
-                <input className="border p-2 flex-grow rounded w-full" type="text" name="mL" value={editedProduct.mL} onChange={handleInputChange} placeholder="Size" />
+                <label className="w-1/4 text-right font-medium">Ratings:</label>
+                <input className="border p-2 flex-grow rounded w-full" type="number" name="ratings" value={editedProduct.ratings} onChange={handleInputChange} placeholder="Ratings" />
             </div>
             <div className="flex items-center space-x-2">
-                <label className="w-1/4 text-right font-medium">Title:</label>
-                <input className="border p-2 flex-grow rounded w-full" type="text" name="title" value={editedProduct.title} onChange={handleInputChange} placeholder="Title" />
+                <label className="w-1/4 text-right font-medium">Quantity:</label>
+                <input className="border p-2 flex-grow rounded w-full" type="number" name="quantity" value={editedProduct.quantity} onChange={handleInputChange} placeholder="Quantity" />
             </div>
             <div className="flex items-center space-x-2">
-                <label className="w-1/4 text-right font-medium">Year:</label>
-                <input className="border p-2 flex-grow rounded w-full" type="text" name="year" value={editedProduct.Year} onChange={handleInputChange} placeholder="Year" />
+                <label className="w-1/4 text-right font-medium">Discount:</label>
+                <input className="border p-2 flex-grow rounded w-full" type="number" name="discount" value={editedProduct.discount} onChange={handleInputChange} placeholder="Discount" />
             </div>
             {/* ... other input fields with similar structure ... */}
 
-            <div className="flex items-start space-x-2 mt-4">
-                <label className="w-1/4 text-right align-top font-medium">Description:</label>
-                <textarea className="border p-2 flex-grow rounded h-32  w-full" name="description" value={editedProduct.description} onChange={handleInputChange} placeholder="Description"></textarea>
-            </div>
             <div className="flex items-center space-x-2">
                 <label className="w-1/4 text-right font-medium">Images:</label>
                 <div className="w-3/4 grid grid-cols-2 gap-4">

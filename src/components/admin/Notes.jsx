@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import AddNote from './AddNote';
 import AllNotes from './AllNotes';
 

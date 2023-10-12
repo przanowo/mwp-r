@@ -82,7 +82,7 @@ const Navigation = () => {
 {/* //desktop menu */}
                 <div className="flex text-center items-center">
                     {/* <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop'> Shop </Link> */}
-                    <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/vintage'> Vintage </Link>
+                    {/* <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/vintage'> Vintage </Link> */}
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/parfum'> Perfume </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/miniature'> Miniature </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/sample'> Sample </Link>
