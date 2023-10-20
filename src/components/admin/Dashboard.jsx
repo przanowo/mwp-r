@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { CountAllProducts } from '../../firebase';
+// import { CountAllProducts } from '../../firebase';
 
 const Dashboard = () => {
-  const [allProductsCount, setAllProductsCount] = useState();
+  // const [allProductsCount, setAllProductsCount] = useState();
 
-  useEffect(() => {
-    const CountAllProductsFromFirestore = async () => {
-      const totalNumberOfProducts = await CountAllProducts();
-      console.log(totalNumberOfProducts);
-      setAllProductsCount(totalNumberOfProducts);
-    }
-    CountAllProductsFromFirestore();
-  }, []);
+  // useEffect(() => {
+  //   const CountAllProductsFromFirestore = async () => {
+  //     const totalNumberOfProducts = await CountAllProducts();
+  //     console.log(totalNumberOfProducts);
+  //     setAllProductsCount(totalNumberOfProducts);
+  //   }
+  //   CountAllProductsFromFirestore();
+  // }, []);
 
 
   return (
     <>
-    <div className="">
+    {/* <div className="">
       <h1>All Products:</h1>
       <h1>{allProductsCount}</h1>
-    </div>
+    </div> */}
     <div>
       <h1></h1>
     </div>

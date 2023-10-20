@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { fetchProductsByCategoryFromFirestore, getTotalNumberOfProducts } from '../../firebase';
+import React, { useEffect, useState, useRef } from 'react';
+import { firstBatchOfProducts, nextBatchOfProducts } from '../../firebase';
 import ProductCard from '../product/ProductCard';
 import { SlArrowDown } from 'react-icons/sl';
 import Footer from '../common/Footer';
-import SearchComponent from '../product/SearchComponent'; // Import the SearchComponent
+import SearchComponent from '../product/SearchComponent';
 
-const PRODUCTS_PER_PAGE = 24;
+const limitNum = 24;
 
 const Category = ({ category }) => {
   const [products, setProducts] = useState([]);
-  const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [lastProduct, setLastProduct] = useState(null);
-  const nextDivRef = React.useRef(null);
-  const [searchResults, setSearchResults] = useState([]); // State to hold search results
+  const [loading, setLoading] = useState(false);
+  const nextDivRef = useRef(null);
+  const [searchResults, setSearchResults] = useState([]);
+  const [lastVisibleProduct, setLastVisibleProduct] = useState(null);
 
   const categoryToBackgroundUrl = {
     'vintage': 'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fvintage.jpg?alt=media&token=a46c7ea3-0988-4307-bd54-2d31e25d6832',
@@ -23,44 +22,33 @@ const Category = ({ category }) => {
   };
 
   useEffect(() => {
-    const loadTotalNumberOfProducts = async () => {
-      const totalNumberOfProducts = await getTotalNumberOfProducts(category);
-      console.log(totalNumberOfProducts);
-      setTotalPages(Math.ceil(totalNumberOfProducts / PRODUCTS_PER_PAGE));
+    if (searchResults.length > 0) {
+      setProducts(searchResults);
+      return;
+    } else {
+    const fetchFirstBatch = async () => {
+      setLoading(true);
+      const result = await firstBatchOfProducts(category, limitNum);
+      setProducts(result.products);
+      setLastVisibleProduct(result.lastProduct);
+      setLoading(false);
     };
 
-    loadTotalNumberOfProducts();
-
-    setCurrentPage(1);
-    setLastProduct(null);
-  }, [category]);
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      if (searchResults.length > 0) {
-        // If there are search results, display them instead of fetching products
-        setProducts(searchResults);
-      } else {
-        const { products: fetchedProducts, lastProduct: fetchedLastProduct } = await fetchProductsByCategoryFromFirestore(category, lastProduct, PRODUCTS_PER_PAGE);
-        setProducts(fetchedProducts);
-        setLastProduct(fetchedLastProduct);
-      }
-    };
-
-    loadProducts();
-  }, [category, currentPage, searchResults]);
-
-  const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+    fetchFirstBatch();
     }
+  }, [category, searchResults]);
+
+  const loadMoreProducts = async () => {
+    setLoading(true);
+    const result = await nextBatchOfProducts(category, limitNum, lastVisibleProduct);
+    setProducts(prevProducts => [...prevProducts, ...result.products]);
+    setLastVisibleProduct(result.lastProduct);
+    setLoading(false);
   };
 
-  const goToPreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+  const handleClick = async () => {
+    await loadMoreProducts();
+  }
 
   const backgroundImageURL = categoryToBackgroundUrl[category.toLowerCase()];
 
@@ -78,7 +66,7 @@ const Category = ({ category }) => {
         </button>
       </div>
       <div className='snap-start pt-24' ref={nextDivRef}>
-        <SearchComponent category={category} setSearchResults={setSearchResults} /> {/* Add the SearchComponent */}
+        <SearchComponent category={category} setSearchResults={setSearchResults} />
         <ul className='grid grid-cols-6 gap-4'>
           {products.map(product => (
             <li key={product.id}>
@@ -87,17 +75,9 @@ const Category = ({ category }) => {
           ))}
         </ul>
       </div>
-
       <div className="flex justify-center mb-16">
-        <button className='p-2 justify-center' onClick={goToPreviousPage} disabled={currentPage === 1}>
-          Previous
-        </button>
-        <div className='p-2 justify-center'>
-          Page {currentPage} of {totalPages}
-        </div>
-        <button className='p-2 justify-center' onClick={goToNextPage} disabled={currentPage === totalPages}>
-          Next
-        </button>
+      {loading && <p>Loading...</p>}
+      <button onClick={handleClick} >Load more</button>
       </div>
       <div className="">
         <Footer />
@@ -107,3 +87,5 @@ const Category = ({ category }) => {
 };
 
 export default Category;
+
+

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 import AuthContext from '../../hooks/AuthContext'
+import { CartContext } from '../../hooks/CartContext';
 import { logout } from '../../firebase'
 // import Search from '../product/Search'
 import { HiMenuAlt1, HiOutlineHome, HiOutlineShoppingCart } from 'react-icons/hi'
@@ -12,6 +13,7 @@ import logowhite from '../../logowhite.png'
 const Navigation = () => {
     const { user } = React.useContext(AuthContext); // Get the user from AuthContext
     const [scrolled, setScrolled] = useState(false);
+    const { cart } = React.useContext(CartContext);
     // const [hovered, setHovered] = useState(false);
     // const { setSearchTerm } = useSearch();
 
@@ -108,7 +110,18 @@ const Navigation = () => {
                     ) : (
                         null
                     )}
-                    <Link className='px-3 py-2 text-2xl text-center' to='/checkout'> <HiOutlineShoppingCart /> </Link>
+                    {/* <Link className='px-3 py-2 text-2xl text-center' to='/checkout'> <HiOutlineShoppingCart /> </Link> */}
+                    <Link className='px-4 py-2 text-2xl text-center' to='/checkout'>
+                        <div className='relative block'>
+                            <HiOutlineShoppingCart />
+                            {cart.length > 0 && (
+                                <span className='absolute -right-2 -bottom-3 text-red-500 text-base font-medium'>
+                                    {cart.length}
+                                </span>
+                            )}
+                        </div>
+                    </Link>
+
                 </div>
 {/* //mobile menu */}
                 <div className="lg:hidden fixed z-10 bottom-0 flex items-center justify-between shadow-bottomNavigation text-gray-700 body-font bg-white w-full h-14 sm:h-16 px-4 md:px-8">

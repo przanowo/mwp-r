@@ -50,7 +50,6 @@ const Product = () => {
   }
 
 
-
   return (
     <div className="mt-24 p-6 bg-white shadow-lg rounded-md">
       <div className="flex">

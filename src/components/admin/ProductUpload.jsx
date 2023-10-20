@@ -4,18 +4,18 @@ import { addProductToFirestore, uploadImage } from '../../firebase';
 const ProductUpload = () => {
     const [product, setProduct] = useState({
         category: "",
-        currency: "",
+        currency: "EUR",
         description: "",
-        discount: "",
-        featured: "",
-        liked: "",
-        magazine: "",
+        discount: "0",
+        featured: "no",
+        liked: "no",
+        magazine: "NL",
         nowe: "",
         price: "",
         quantity: "",
-        ratings: "",
+        ratings: "0",
         sex: "",
-        show: "",
+        show: "yes",
         size: "",
         title: "",
         typ: "",
@@ -47,8 +47,8 @@ const ProductUpload = () => {
             imageUrls.push(imageUrl);
         }
       
-        product.imageUrls = imageUrls;
-        product.mainImageUrl = imageUrls[mainImageIndex]; // Setting the main image URL
+        product.images = imageUrls;
+        product.mainImage = imageUrls[mainImageIndex]; // Setting the main image URL
       
         const result = await addProductToFirestore(product);
         console.log('result:',result, 'product:', product);
@@ -87,8 +87,7 @@ const ProductUpload = () => {
     };
 
     return (
-        <div className="flex justify-center items-center bg-gray-200 mt-10">
-
+        <div className="flex justify-center items-center bg-gray-200 mt-32">
                 <form className="bg-white p-6 rounded shadow-md w-full max-w-md" onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="sex">
@@ -183,7 +182,7 @@ const ProductUpload = () => {
                     </select> */}
                 </div>
 
-            {['title', 'description', 'price', 'quantity darabszam', 'size hany ml'].map((field, idx) => (
+            {['title', 'description', 'price', 'quantity', 'size'].map((field, idx) => (
                 <div key={idx} className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={field}>
                         {field.charAt(0).toUpperCase() + field.slice(1)}:

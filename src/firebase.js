@@ -14,8 +14,8 @@ import { getFirestore,
   orderBy,
   startAfter,
   where,
-  getCountFromServer
-
+  getCountFromServer,
+  serverTimestamp 
 } from 'firebase/firestore';
 import {
   getStorage,
@@ -43,7 +43,7 @@ const storage = getStorage(app);
 
 const googleProvider = new GoogleAuthProvider();
 
-const algoliaClient = algoliasearch("0WY8JQPJ1T", "16cc556ce07f66ac3eb229d53b6f2d6a");
+const algoliaClient = algoliasearch(process.env.REACT_APP_YOUR_ALGOLIA_APP_ID, process.env.REACT_APP_YOUR_ALGOLIA_KEY);
 const index = algoliaClient.initIndex('products');
 
 
@@ -125,6 +125,7 @@ export const addProductToFirestore = async (product) => {
     const modifiedProduct = {
       ...product,
       titleLowCase: product.title.toLowerCase(),
+      createdAt: serverTimestamp()
     };
 
     await addDoc(collection(firestore, 'products'), modifiedProduct);
@@ -210,23 +211,39 @@ export const fetchProductFromFirestore = async (category, productId) => {
   };
 };
 
-export const fetchProductsByCategoryFromFirestore = async (category, lastVisibleProduct = null, limitNum) => {
-  let q = query(
+export const firstBatchOfProducts = async (category, limitNum) => {
+  const q = query(
       collection(firestore, 'products'),
       where('category', '==', category),
+      where('show', '==', 'yes'),
       orderBy('title', 'desc'),
       limit(limitNum)
   );
 
-  if (lastVisibleProduct) {
-      q = query(
-          collection(firestore, 'products'),
-          where('category', '==', category),
-          orderBy('title', 'desc'),
-          startAfter(lastVisibleProduct),
-          limit(limitNum)
-      );
-  }
+  const querySnapshot = await getDocs(q);
+  const products = [];
+  querySnapshot.forEach(doc => {
+      products.push({ id: doc.id, ...doc.data() });
+  });
+
+  const lastProduct = querySnapshot.docs[querySnapshot.docs.length - 1];
+  console.log('lastProduct', lastProduct);
+
+  return {
+      products,
+      lastProduct,
+  };
+}
+
+export const nextBatchOfProducts = async (category, limitNum, lastVisibleProduct) => {
+  const q = query(
+      collection(firestore, 'products'),
+      where('category', '==', category),
+      where('show', '==', 'yes'),
+      orderBy('title', 'desc'),
+      startAfter(lastVisibleProduct),
+      limit(limitNum)
+  );
 
   const querySnapshot = await getDocs(q);
   const products = [];
@@ -239,7 +256,7 @@ export const fetchProductsByCategoryFromFirestore = async (category, lastVisible
       products,
       lastProduct,
   };
-};
+}
 
 export const searchProductsByTitle = async (category, searchTerm) => {
   try {
@@ -251,7 +268,6 @@ export const searchProductsByTitle = async (category, searchTerm) => {
       id: hit.objectID,
       ...hit,
     }));
-
     console.log(products);
     return products;
   } catch (error) {
@@ -261,16 +277,17 @@ export const searchProductsByTitle = async (category, searchTerm) => {
 };
 
 
-export const getTotalNumberOfProducts = async (category) => {
-  let productQuery = collection(firestore, 'products');
+// export const getTotalNumberOfProducts = async (category) => {
+//   let productQuery = collection(firestore, 'products');
 
-  if (category) {
-    productQuery = query(productQuery, where('category', '==', category));
-  }
+//   if (category) {
+//     productQuery = query(productQuery, where('category', '==', category));
+//   }
 
-  const snapshot = await getDocs(productQuery);
-  return snapshot.docs.length;
-};
+//   const snapshot = await getDocs(productQuery);
+//   return snapshot.docs.length;
+// };
+
 export const addProductToUserCollection = async (userId, productId, product) => {
   // // console.log(product);
   const userProductRef = doc(firestore, 'users', userId, 'products', productId);
@@ -415,23 +432,19 @@ export const updateNoteInFirestore = async (noteId, updatedData) => {
   } catch (error) {
     console.error("Error updating note:", error);
     return { success: false, message: error.message };
-  }
-}
-
-// export const recountProducts = async () => {
-//   const recountFunction = firebase.functions().httpsCallable('recountAllProducts');
-//   try {
-//       const result = await recountFunction();
-//       console.log("Successfully recounted products:", result);
-//   } catch (error) {
-//       console.error("Error recounting products:", error);
-//   }
-// }
-
+  }}
 
 export const CountAllProducts = async () => {
   const coll = collection(firestore, 'products');
   const snapshot = await getCountFromServer(coll);
   console.log('count: ', snapshot.data().count);
   return snapshot.data().count;
+}
+
+export const CountProductsByCategory = async (category) => {
+  const coll = collection(firestore, 'products');
+  const queryFilter = query(coll, where('category', '==', category)); // Change the variable name to queryFilter
+  const snapshot = await getDocs(queryFilter); // Use the queryFilter variable here
+  console.log('count: ', snapshot.size);
+  return snapshot.size;
 }

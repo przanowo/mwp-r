@@ -16,7 +16,7 @@ const Cart = () => {
             <li key={product.id} className="mb-4 border-b pb-4 last:border-b-0">
                 <div className="flex justify-between items-center">
                     <div className="w-1/4 mr-4">
-                        <img src={product.mainImageUrl} alt={product.title} className="object-cover h-32 w-full rounded-md shadow-md" />
+                        <img src={product.mainImage} alt={product.title} className="object-cover h-32 w-full rounded-md shadow-md" />
                     </div>
                     <div className="flex-1">
                         <h3 className="text-lg font-semibold">{product.title}</h3>

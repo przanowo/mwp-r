@@ -1,19 +1,25 @@
 import React, { useContext, useState } from 'react';
 import AuthContext from '../../hooks/AuthContext'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CartContext } from '../../hooks/CartContext';
 import EditProductModal from '../admin/EditProductModal';  // import the modal component
 
 const ProductCard = ({ product, productId }) => {
+  const navigate = useNavigate();
   const { user } = React.useContext(AuthContext); // Get the user from AuthContext
   const { addToCart } = useContext(CartContext);
   const [currentProduct, setCurrentProduct] = useState(product);
-  
 
   const handleAddToCart = () => {
-    console.log(productId);
-    addToCart(product, productId); // assuming product object has an 'id' property which is equal to 'productId'
-  };
+    if (user) {
+      console.log(productId);
+      addToCart(product, productId); // assuming product object has an 'id' property which is equal to 'productId'
+      // Perform the "Add to cart" action
+    } else {
+      // Redirect to the login page
+      navigate('/login'); 
+    }
+  }
 
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
