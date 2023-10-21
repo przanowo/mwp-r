@@ -6,16 +6,14 @@ const Account = () => {
   const { user } = useContext(AuthContext);
 
   const [details, setDetails] = useState({
-    displayName: '',
-    firstName: '',
-    lastName: '',
-    addressLine1: '',
-    addressLine2: '',
-    addressLine3: '',
-    city: '',
-    postCode: '',
-    country: '',
-    email: '',  
+    'first name': '',
+    'last name': '',
+    'address line 1': '',
+    'address line 2': '',
+    'address line 3': '',
+    'city': '',
+    'post code': '',
+    'country': '', 
   });
   const [message, setMessage] = useState('');
   const [editing, setEditing] = useState(false);

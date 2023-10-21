@@ -1,16 +1,25 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { CartContext } from '../../hooks/CartContext';
+import { Link } from 'react-router-dom';
 
 const Cart = () => {
-  const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useContext(CartContext);
+    const [expanded, setExpanded] = useState(true);
+    const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useContext(CartContext);
 
-  if (cart.length === 0) {
-    return <div className='flex flex-grow'>Your cart is empty.</div>;
-  }
+    if (cart.length === 0) {
+        return <div className='flex flex-grow'>Your cart is empty.</div>;
+    }
 
   return (
 <div className="flex flex-grow  bg-white p-8 rounded-md shadow-md w-full max-w-xl mx-auto">
     <h2 className="text-2xl font-bold mb-6">Your Cart</h2>
+    { !expanded && (
+    <div> 
+        <h3 onClick={() => setExpanded(true)}>Show cart</h3>
+    </div>
+    )}
+    { expanded && ( 
+    <div>
     <ul>
         {cart.map((product) => (
             <li key={product.id} className="mb-4 border-b pb-4 last:border-b-0">
@@ -48,10 +57,14 @@ const Cart = () => {
             </li>
         ))}
     </ul>
+    </div>
+    )}
     <div className="mt-6">
         <strong className="text-xl font-semibold">Total: </strong>
         <span className="text-xl">${cart.reduce((acc, product) => acc + (product.price * product.quantity), 0).toFixed(2)}</span>
+        <h3 onClick={() => setExpanded(false)}>Hide items</h3>
     </div>
+    
 </div>
 
   );

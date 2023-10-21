@@ -274,7 +274,7 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
             <div className="flex items-center space-x-2">
                 <label className="w-1/4 text-right font-medium">Images:</label>
                 <div className="w-3/4 grid grid-cols-2 gap-4">
-                    {editedProduct.imageUrls.map((imgUrl, index) => (
+                    {editedProduct.images.map((imgUrl, index) => (
                         <div key={index}>
                             <img 
                               src={imgUrl} 

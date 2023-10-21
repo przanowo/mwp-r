@@ -9,6 +9,7 @@ const ProductCard = ({ product, productId }) => {
   const { user } = React.useContext(AuthContext); // Get the user from AuthContext
   const { addToCart } = useContext(CartContext);
   const [currentProduct, setCurrentProduct] = useState(product);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleAddToCart = () => {
     if (user) {
@@ -20,9 +21,6 @@ const ProductCard = ({ product, productId }) => {
       navigate('/login'); 
     }
   }
-
-
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleEditProduct = () => {
     setIsEditModalOpen(true);

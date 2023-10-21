@@ -22,10 +22,7 @@ import Admin from './components/routes/Admin';
 import ProductUpload from './components/admin/ProductUpload';
 import Dashboard from './components/admin/Dashboard';
 import Notes from './components/admin/Notes';
-// import Man from './components/routes/Man';
-// import Woman from './components/routes/Woman';
-
-
+import Checkout from './components/routes/Checkout';
 
 function App() {
   
@@ -44,20 +41,12 @@ function App() {
     { path: '/shop', component: <Shop /> },
     { path: '/shop/:productId', component: <Product /> },
     { path: '/shop/:category', component: <Category /> },
-    // { path: '/miniature', component: <Miniature /> },
-    // { path: '/sample', component: <Sample /> },
-    // { path: '/man', component: <Man /> },
-    // { path: '/woman', component: <Woman /> },
-
-
-
-    { path: '/checkout', component: <Cart /> }
-    
+    { path: '/checkout', component: <Checkout /> },
+    { path: '/cart', component: <Cart /> }
   ];
       
   return (
     <div className="flex flex-col bg-gray-200 ">
-
       <Navigation />
       <Routes>
         {/* Map through the routes array and render the routes */}
