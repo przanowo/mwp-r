@@ -3,20 +3,14 @@ import { Link } from 'react-router-dom'
 import AuthContext from '../../hooks/AuthContext'
 import { CartContext } from '../../hooks/CartContext';
 import { logout } from '../../firebase'
-// import Search from '../product/Search'
 import { HiMenuAlt1, HiOutlineHome, HiOutlineShoppingCart } from 'react-icons/hi'
 import { MdOutlineAccountCircle,  } from 'react-icons/md'
 import logoblack from '../../logoblack.png'
 import logowhite from '../../logowhite.png'
-// import { useSearch } from '../../hooks/SearchContext';
 
 const Navigation = () => {
     const { user } = React.useContext(AuthContext); // Get the user from AuthContext
-    const [scrolled, setScrolled] = useState(true);
     const { cart } = React.useContext(CartContext);
-    const [ startedScrolling, setStartedScrolling] = useState(false);
-    // const [hovered, setHovered] = useState(false);
-
     const [isAtTop, setIsAtTop] = useState(true);
 
     useEffect(() => {
@@ -49,38 +43,6 @@ const Navigation = () => {
             console.error("Error logging out: ", error.message);
         }
     };
-    
-    // useEffect(() => {
-    //     const handleScroll = () => {
-    //         const snapContainer = document.querySelector('.snap-y');
-    //         if (snapContainer) {
-    //             const offset = snapContainer.scrollTop;
-    //             if (offset > 0 && !startedScrolling) {
-    //                 setScrolled(true);
-    //                 setStartedScrolling(false); // Update the state here
-    //             }
-    
-    //             if (offset === 0) {
-    //                 setScrolled(false);
-    //                 setStartedScrolling(false); // Update the state here
-    //             }
-    //         };
-    //     };
-    
-    //     // Attach the scroll listener if the element exists
-    //     const snapContainer = document.querySelector('.snap-y');
-    //     if (snapContainer) {
-    //         snapContainer.addEventListener('scroll', handleScroll);
-    //     }
-    
-    //     // Cleanup
-    //     return () => {
-    //         // Remove the event listener if the element exists
-    //         if (snapContainer) {
-    //             snapContainer.removeEventListener('scroll', handleScroll);
-    //         }
-    //     };
-    // }, []);
 
     const logoSrc = isAtTop ? logowhite : logoblack;
     const fixedLogoClasses = `${logoSrc}`;

@@ -1,6 +1,15 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
-import { getFirestore,
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signOut,
+} from 'firebase/auth';
+import {
+  getFirestore,
   addDoc,
   collection,
   getDocs,
@@ -15,14 +24,14 @@ import { getFirestore,
   startAfter,
   where,
   getCountFromServer,
-  serverTimestamp 
+  serverTimestamp,
 } from 'firebase/firestore';
 import {
   getStorage,
   ref,
   uploadBytesResumable,
   getDownloadURL,
-  deleteObject
+  deleteObject,
 } from 'firebase/storage';
 
 import algoliasearch from 'algoliasearch/lite';
@@ -44,9 +53,11 @@ const storage = getStorage(app);
 
 const googleProvider = new GoogleAuthProvider();
 
-const algoliaClient = algoliasearch(process.env.REACT_APP_YOUR_ALGOLIA_APP_ID, process.env.REACT_APP_YOUR_ALGOLIA_KEY);
+const algoliaClient = algoliasearch(
+  process.env.REACT_APP_YOUR_ALGOLIA_APP_ID,
+  process.env.REACT_APP_YOUR_ALGOLIA_KEY
+);
 const index = algoliaClient.initIndex('products');
-
 
 export const createUserDocumentFromAuth = async (
   userAuth,
@@ -80,16 +91,16 @@ export const createUserDocumentFromAuth = async (
   //return userdata
 };
 export const signInWithGoogle = () => {
-    return signInWithPopup(auth, googleProvider);
+  return signInWithPopup(auth, googleProvider);
 };
 export const signInWithEmailPassword = (email, password) => {
   return signInWithEmailAndPassword(auth, email, password);
 };
 export const signUpWithEmailPassword = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password); // Return the Promise here
-  };
+  return createUserWithEmailAndPassword(auth, email, password); // Return the Promise here
+};
 export const sendPassResetEmail = (email) => {
-    return sendPasswordResetEmail(auth, email);
+  return sendPasswordResetEmail(auth, email);
 };
 export const logout = () => {
   return signOut(auth);
@@ -98,14 +109,18 @@ export const fetchUserDetails = async (userId) => {
   try {
     const userDocRef = doc(firestore, 'users', userId);
     const userSnapshot = await getDoc(userDocRef);
-    
+
     if (userSnapshot.exists()) {
-      return { success: true, data: userSnapshot.data(), message: 'User details fetched successfully!' };
+      return {
+        success: true,
+        data: userSnapshot.data(),
+        message: 'User details fetched successfully!',
+      };
     } else {
       throw new Error('User not found in Firestore.');
     }
   } catch (error) {
-    console.error("Error fetching user details:", error);
+    console.error('Error fetching user details:', error);
     return { success: false, message: error.message };
   }
 };
@@ -116,7 +131,7 @@ export const updateUserDetails = async (userId, details) => {
     await setDoc(userDocRef, details, { merge: true });
     return { success: true, message: 'User details updated successfully!' };
   } catch (error) {
-    console.error("Error updating user details:", error);
+    console.error('Error updating user details:', error);
     return { success: false, message: error.message };
   }
 };
@@ -126,19 +141,18 @@ export const addProductToFirestore = async (product) => {
     const modifiedProduct = {
       ...product,
       titleLowCase: product.title.toLowerCase(),
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     };
 
     await addDoc(collection(firestore, 'products'), modifiedProduct);
     console.log('product', modifiedProduct);
     return { success: true, message: 'Product added successfully!' };
   } catch (error) {
-    console.error("Error adding product:", error);
+    console.error('Error adding product:', error);
     return { success: false, message: error.message };
   }
 };
 export const uploadImage = async (file) => {
-
   // Create a unique filename: current timestamp + original file name
   const uniqueFilename = `${Date.now()}-${file.name}`;
   const folderName = 'productimages';
@@ -148,7 +162,8 @@ export const uploadImage = async (file) => {
   const uploadTask = uploadBytesResumable(storageRef, file);
 
   return new Promise((resolve, reject) => {
-    uploadTask.on('state_changed',
+    uploadTask.on(
+      'state_changed',
       (snapshot) => {
         // Handle progress
       },
@@ -164,38 +179,46 @@ export const uploadImage = async (file) => {
   });
 };
 export const fetchProductsFromFirestore = async (lastVisibleProducts = {}) => {
-  const productCategories = ['miniature', 'sample', 'perfume', 'gold', 'gifts', 'soapandpowder'];
+  const productCategories = [
+    'miniature',
+    'sample',
+    'perfume',
+    'gold',
+    'gifts',
+    'soapandpowder',
+  ];
   const allProducts = {};
   const newLastVisibleProducts = {};
 
   for (const category of productCategories) {
-      let q = query(
-          collection(firestore, 'products'),
-          where('category', '==', category),
-          orderBy('title', 'desc'),
-          limit(6)
+    let q = query(
+      collection(firestore, 'products'),
+      where('category', '==', category),
+      orderBy('title', 'desc'),
+      limit(6)
+    );
+    if (lastVisibleProducts[category]) {
+      q = query(
+        collection(firestore, 'products'),
+        where('category', '==', category),
+        orderBy('title', 'desc'),
+        startAfter(lastVisibleProducts[category]),
+        limit(4)
       );
-      if (lastVisibleProducts[category]) {
-          q = query(
-              collection(firestore, 'products'),
-              where('category', '==', category),
-              orderBy('title', 'desc'),
-              startAfter(lastVisibleProducts[category]),
-              limit(4)
-          );
-      }
+    }
 
-      const querySnapshot = await getDocs(q);
-      allProducts[category] = {};
-      querySnapshot.forEach(doc => {
-          allProducts[category][doc.id] = doc.data();
-      });
-      newLastVisibleProducts[category] = querySnapshot.docs[querySnapshot.docs.length - 1];
+    const querySnapshot = await getDocs(q);
+    allProducts[category] = {};
+    querySnapshot.forEach((doc) => {
+      allProducts[category][doc.id] = doc.data();
+    });
+    newLastVisibleProducts[category] =
+      querySnapshot.docs[querySnapshot.docs.length - 1];
   }
 
   return {
-      allProducts,
-      lastVisible: newLastVisibleProducts
+    allProducts,
+    lastVisible: newLastVisibleProducts,
   };
 };
 
@@ -204,61 +227,145 @@ export const fetchProductFromFirestore = async (category, productId) => {
   const productDoc = await getDoc(productRef);
 
   if (!productDoc.exists) {
-      return null;
+    return null;
   }
 
   return {
-      id: productDoc.id,
-      ...productDoc.data(),
+    id: productDoc.id,
+    ...productDoc.data(),
+  };
+};
+
+const fetchProducts = async (
+  queryConditions,
+  queryConditionOrder,
+  limitNum
+) => {
+  const q = query(
+    collection(firestore, 'products'),
+    ...queryConditions,
+    where('show', '==', 'yes'),
+    ...queryConditionOrder,
+    limit(limitNum || 6)
+  );
+
+  const querySnapshot = await getDocs(q);
+  const products = [];
+  querySnapshot.forEach((doc) => {
+    products.push({ id: doc.id, ...doc.data() });
+  });
+
+  return products;
+};
+
+export const fetchFeaturedProducts = async (limitNum) => {
+  const queryConditions = [where('featured', '==', 'yes')];
+  const queryConditionOrder = [orderBy('createdAt', 'desc')];
+  return {
+    productsFeatured: await fetchProducts(
+      queryConditions,
+      queryConditionOrder,
+      limitNum
+    ),
+  };
+};
+
+export const fetchLikedProducts = async (limitNum) => {
+  const queryConditions = [where('liked', '==', 'yes')];
+  const queryConditionOrder = [orderBy('createdAt', 'desc')];
+  return {
+    productsLiked: await fetchProducts(
+      queryConditions,
+      queryConditionOrder,
+      limitNum
+    ),
+  };
+};
+
+export const fetchSaleProducts = async (limitNum) => {
+  const queryConditions = [where('discount', '>', 0)];
+  const queryConditionOrder = [orderBy('discount', 'desc')];
+  return {
+    productsSale: await fetchProducts(
+      queryConditions,
+      queryConditionOrder,
+      limitNum
+    ),
+  };
+};
+export const fetchManProducts = async (limitNum) => {
+  const queryConditions = [where('sex', '==', 'men')];
+  const queryConditionOrder = [orderBy('price', 'desc')];
+  return {
+    productsMan: await fetchProducts(
+      queryConditions,
+      queryConditionOrder,
+      limitNum
+    ),
+  };
+};
+export const fetchWomanProducts = async (limitNum) => {
+  const queryConditions = [where('sex', '==', 'women')];
+  const queryConditionOrder = [orderBy('price', 'desc')];
+  return {
+    productsWomen: await fetchProducts(
+      queryConditions,
+      queryConditionOrder,
+      limitNum
+    ),
   };
 };
 
 export const firstBatchOfProducts = async (category, limitNum) => {
   const q = query(
-      collection(firestore, 'products'),
-      where('category', '==', category),
-      where('show', '==', 'yes'),
-      orderBy('title', 'desc'),
-      limit(limitNum)
+    collection(firestore, 'products'),
+    where('category', '==', category),
+    where('show', '==', 'yes'),
+    orderBy('title', 'desc'),
+    limit(limitNum)
   );
 
   const querySnapshot = await getDocs(q);
   const products = [];
-  querySnapshot.forEach(doc => {
-      products.push({ id: doc.id, ...doc.data() });
+  querySnapshot.forEach((doc) => {
+    products.push({ id: doc.id, ...doc.data() });
   });
 
   const lastProduct = querySnapshot.docs[querySnapshot.docs.length - 1];
   console.log('lastProduct', lastProduct);
 
   return {
-      products,
-      lastProduct,
+    products,
+    lastProduct,
   };
-}
+};
 
-export const nextBatchOfProducts = async (category, limitNum, lastVisibleProduct) => {
+export const nextBatchOfProducts = async (
+  category,
+  limitNum,
+  lastVisibleProduct
+) => {
   const q = query(
-      collection(firestore, 'products'),
-      where('category', '==', category),
-      where('show', '==', 'yes'),
-      orderBy('title', 'desc'),
-      startAfter(lastVisibleProduct),
-      limit(limitNum)
+    collection(firestore, 'products'),
+    where('category', '==', category),
+    where('show', '==', 'yes'),
+    orderBy('title', 'desc'),
+    startAfter(lastVisibleProduct),
+    limit(limitNum)
   );
 
   const querySnapshot = await getDocs(q);
   const products = [];
-  querySnapshot.forEach(doc => {
-      products.push({ id: doc.id, ...doc.data() });
+  querySnapshot.forEach((doc) => {
+    products.push({ id: doc.id, ...doc.data() });
   });
 
   const lastProduct = querySnapshot.docs[querySnapshot.docs.length - 1];
   return {
-      products,
-      lastProduct,
+    products,
+    lastProduct,
   };
-}
+};
 
 export const searchProductsByTitle = async (category, searchTerm) => {
   try {
@@ -266,7 +373,7 @@ export const searchProductsByTitle = async (category, searchTerm) => {
       filters: `category:${category}`,
     });
 
-    const products = hits.map(hit => ({
+    const products = hits.map((hit) => ({
       id: hit.objectID,
       ...hit,
     }));
@@ -278,21 +385,25 @@ export const searchProductsByTitle = async (category, searchTerm) => {
   }
 };
 
-export const addProductToUserCollection = async (userId, productId, product) => {
+export const addProductToUserCollection = async (
+  userId,
+  productId,
+  product
+) => {
   // // console.log(product);
   const userProductRef = doc(firestore, 'users', userId, 'products', productId);
-  console.log("firestore", 'users', userId, 'products', productId);
+  console.log('firestore', 'users', userId, 'products', productId);
 
   // Check if the product already exists in Firestore
   const productSnapshot = await getDoc(userProductRef);
-  
+
   if (productSnapshot.exists()) {
-      // Product exists, increment its quantity
-      const currentQuantity = productSnapshot.data().quantity || 0;
-      await updateDoc(userProductRef, { quantity: currentQuantity + 1 });
+    // Product exists, increment its quantity
+    const currentQuantity = productSnapshot.data().quantity || 0;
+    await updateDoc(userProductRef, { quantity: currentQuantity + 1 });
   } else {
-      // Product doesn't exist, set it with the given quantity
-      await setDoc(userProductRef, product, { merge: true });
+    // Product doesn't exist, set it with the given quantity
+    await setDoc(userProductRef, product, { merge: true });
   }
 };
 export const getUserProductRef = (userId, productId) => {
@@ -315,7 +426,7 @@ export const decreaseProductQuantityInFirestore = async (userId, productId) => {
     const currentQuantity = productSnapshot.data().quantity || 0;
 
     if (currentQuantity <= 1) {
-      await deleteDoc(userProductRef);  // Remove product if quantity becomes 0
+      await deleteDoc(userProductRef); // Remove product if quantity becomes 0
     } else {
       await updateDoc(userProductRef, { quantity: currentQuantity - 1 });
     }
@@ -330,7 +441,7 @@ export const fetchUserCart = async (userId) => {
   const productSnapshot = await getDocs(productsRef);
 
   const cart = [];
-  productSnapshot.forEach(doc => {
+  productSnapshot.forEach((doc) => {
     cart.push({ ...doc.data(), id: doc.id });
   });
 
@@ -346,7 +457,7 @@ export const updateProductInFirestore = async (productId, updatedData) => {
     await updateDoc(productRef, updatedData);
     return { success: true, message: 'Product updated successfully!' };
   } catch (error) {
-    console.error("Error updating product:", error);
+    console.error('Error updating product:', error);
     return { success: false, message: error.message };
   }
 };
@@ -360,7 +471,7 @@ export const deleteProductFromFirestore = async (productId) => {
     await deleteDoc(productRef);
     return { success: true, message: 'Product deleted successfully!' };
   } catch (error) {
-    console.log("Error deleting product:", error);
+    console.log('Error deleting product:', error);
     return { success: false, message: error.message };
   }
 };
@@ -372,7 +483,7 @@ export const deleteImageFromGSC = async (imageUrl) => {
     await deleteObject(imageRef);
     return { success: true, message: 'Image deleted successfully!' };
   } catch (error) {
-    console.error("Error deleting image:", error);
+    console.error('Error deleting image:', error);
     return { success: false, message: error.message };
   }
 };
@@ -380,47 +491,50 @@ export const createOrderFromCheckout = async (order) => {
   try {
     const modifiedOrder = {
       ...order,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     };
     await addDoc(collection(firestore, 'orders'), modifiedOrder);
-    return {success: true, message: 'Order added successfully'}
+    return { success: true, message: 'Order added successfully' };
   } catch (error) {
-    console.error("error create order doc", error)
+    console.error('error create order doc', error);
   }
-}
+};
 export const addPaymentToOrderDoc = async (orderId, paymentConf) => {
   const orderRef = doc(firestore, 'orders', orderId);
   if (!orderId) {
     console.log('orderID is missing!');
     return;
   }
-  try { 
-    await updateDoc(orderRef, paymentConf)
-    return {success: true, message: 'Order updated with payment confirmation'};
-  } catch(error) {
-    return {success: false, message: 'error.message'}
+  try {
+    await updateDoc(orderRef, paymentConf);
+    return {
+      success: true,
+      message: 'Order updated with payment confirmation',
+    };
+  } catch (error) {
+    return { success: false, message: 'error.message' };
   }
-}
+};
 export const addNoteToFirestore = async (note) => {
   try {
     await addDoc(collection(firestore, 'notes'), note);
     return { success: true, message: 'Note added successfully!' };
   } catch (error) {
-    console.error("Error adding note:", error);
+    console.error('Error adding note:', error);
     return { success: false, message: error.message };
   }
-}
+};
 export const fetchNotesFromFirestore = async () => {
   const notesRef = collection(firestore, 'notes');
   const notesSnapshot = await getDocs(notesRef);
 
   const notes = [];
-  notesSnapshot.forEach(doc => {
+  notesSnapshot.forEach((doc) => {
     notes.push({ ...doc.data(), id: doc.id });
   });
 
   return notes;
-}
+};
 export const deleteNoteFromFirestore = async (noteId) => {
   const noteRef = doc(firestore, 'notes', noteId);
   if (!noteId) {
@@ -431,10 +545,10 @@ export const deleteNoteFromFirestore = async (noteId) => {
     await deleteDoc(noteRef);
     return { success: true, message: 'Note deleted successfully!' };
   } catch (error) {
-    console.log("Error deleting note:", error);
+    console.log('Error deleting note:', error);
     return { success: false, message: error.message };
   }
-}
+};
 export const updateNoteInFirestore = async (noteId, updatedData) => {
   const noteRef = doc(firestore, 'notes', noteId);
   if (!noteId) {
@@ -445,16 +559,17 @@ export const updateNoteInFirestore = async (noteId, updatedData) => {
     await updateDoc(noteRef, updatedData);
     return { success: true, message: 'Note updated successfully!' };
   } catch (error) {
-    console.error("Error updating note:", error);
+    console.error('Error updating note:', error);
     return { success: false, message: error.message };
-  }}
+  }
+};
 
 export const CountAllProducts = async () => {
   const coll = collection(firestore, 'products');
   const snapshot = await getCountFromServer(coll);
   console.log('count: ', snapshot.data().count);
   return snapshot.data().count;
-}
+};
 
 export const CountProductsByCategory = async (category) => {
   const coll = collection(firestore, 'products');
@@ -462,5 +577,4 @@ export const CountProductsByCategory = async (category) => {
   const snapshot = await getDocs(queryFilter); // Use the queryFilter variable here
   console.log('count: ', snapshot.size);
   return snapshot.size;
-}
-
+};
