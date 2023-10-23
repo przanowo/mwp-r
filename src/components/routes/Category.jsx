@@ -5,7 +5,7 @@ import { SlArrowDown } from 'react-icons/sl';
 import Footer from '../common/Footer';
 import SearchComponent from '../product/SearchComponent';
 
-const limitNum = 24;
+const limitNum = 42;
 
 const Category = ({ category }) => {
   const [products, setProducts] = useState([]);
@@ -53,9 +53,9 @@ const Category = ({ category }) => {
   const backgroundImageURL = categoryToBackgroundUrl[category.toLowerCase()];
 
   return (
-    <div className='h-screen w-screen snap-y overflow-scroll justify-center items-center'>
+    <div className='h-screen justify-center items-center'>
       <div
-        className='snap-start flex bg-cover bg-center items-end justify-center h-screen'
+        className='flex bg-cover bg-center items-end justify-center h-screen'
         style={{ backgroundImage: `url(${backgroundImageURL})` }}
       >
         <button
@@ -65,7 +65,7 @@ const Category = ({ category }) => {
           <SlArrowDown />
         </button>
       </div>
-      <div className='snap-start pt-24' ref={nextDivRef}>
+      <div className='pt-24' ref={nextDivRef}>
         <SearchComponent category={category} setSearchResults={setSearchResults} />
         <ul className='grid grid-cols-6 gap-4'>
           {products.map(product => (

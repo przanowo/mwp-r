@@ -3,7 +3,6 @@ import { CartContext } from '../../hooks/CartContext';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
-    const [expanded, setExpanded] = useState(true);
     const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useContext(CartContext);
 
     if (cart.length === 0) {
@@ -11,20 +10,16 @@ const Cart = () => {
     }
 
   return (
-<div className="flex flex-grow  bg-white p-8 rounded-md shadow-md w-full max-w-xl mx-auto">
-    <h2 className="text-2xl font-bold mb-6">Your Cart</h2>
-    { !expanded && (
-    <div> 
-        <h3 onClick={() => setExpanded(true)}>Show cart</h3>
+<div className="flex flex-col flex-grow bg-gray-200/50 p-8 rounded-md shadow-md w-full max-w-4xl mx-auto">
+    <div className="flex justify-center">
+    <h2 className="flex text-3xl font-bold mb-6">Your Cart</h2>
     </div>
-    )}
-    { expanded && ( 
     <div>
     <ul>
         {cart.map((product) => (
             <li key={product.id} className="mb-4 border-b pb-4 last:border-b-0">
                 <div className="flex justify-between items-center">
-                    <div className="w-1/4 mr-4">
+                    <div className="max-w-xl mr-4">
                         <img src={product.mainImage} alt={product.title} className="object-cover h-32 w-full rounded-md shadow-md" />
                     </div>
                     <div className="flex-1">
@@ -58,11 +53,9 @@ const Cart = () => {
         ))}
     </ul>
     </div>
-    )}
-    <div className="mt-6">
+     <div className="mt-6">
         <strong className="text-xl font-semibold">Total: </strong>
         <span className="text-xl">${cart.reduce((acc, product) => acc + (product.price * product.quantity), 0).toFixed(2)}</span>
-        <h3 onClick={() => setExpanded(false)}>Hide items</h3>
     </div>
     
 </div>

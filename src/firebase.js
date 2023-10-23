@@ -32,6 +32,7 @@ const firebaseConfig = {
   authDomain: process.env.REACT_APP_AUTH_DOMAIN,
   projectId: process.env.REACT_APP_PROJECT_ID,
   storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  // strorageBucketPublic: REACT_APP_STORAGE_BUCKET_PUBLIC,
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_APP_ID,
 };
@@ -136,11 +137,12 @@ export const addProductToFirestore = async (product) => {
     return { success: false, message: error.message };
   }
 };
-export const uploadImage = async (file, folderName) => {
+export const uploadImage = async (file) => {
 
   // Create a unique filename: current timestamp + original file name
   const uniqueFilename = `${Date.now()}-${file.name}`;
-
+  const folderName = 'productimages';
+  // const bucketName = 'miniparfumqueenpublic';
 
   const storageRef = ref(storage, `${folderName}/${uniqueFilename}`);
   const uploadTask = uploadBytesResumable(storageRef, file);
@@ -276,18 +278,6 @@ export const searchProductsByTitle = async (category, searchTerm) => {
   }
 };
 
-
-// export const getTotalNumberOfProducts = async (category) => {
-//   let productQuery = collection(firestore, 'products');
-
-//   if (category) {
-//     productQuery = query(productQuery, where('category', '==', category));
-//   }
-
-//   const snapshot = await getDocs(productQuery);
-//   return snapshot.docs.length;
-// };
-
 export const addProductToUserCollection = async (userId, productId, product) => {
   // // console.log(product);
   const userProductRef = doc(firestore, 'users', userId, 'products', productId);
@@ -386,6 +376,31 @@ export const deleteImageFromGSC = async (imageUrl) => {
     return { success: false, message: error.message };
   }
 };
+export const createOrderFromCheckout = async (order) => {
+  try {
+    const modifiedOrder = {
+      ...order,
+      createdAt: serverTimestamp()
+    };
+    await addDoc(collection(firestore, 'orders'), modifiedOrder);
+    return {success: true, message: 'Order added successfully'}
+  } catch (error) {
+    console.error("error create order doc", error)
+  }
+}
+export const addPaymentToOrderDoc = async (orderId, paymentConf) => {
+  const orderRef = doc(firestore, 'orders', orderId);
+  if (!orderId) {
+    console.log('orderID is missing!');
+    return;
+  }
+  try { 
+    await updateDoc(orderRef, paymentConf)
+    return {success: true, message: 'Order updated with payment confirmation'};
+  } catch(error) {
+    return {success: false, message: 'error.message'}
+  }
+}
 export const addNoteToFirestore = async (note) => {
   try {
     await addDoc(collection(firestore, 'notes'), note);
@@ -448,3 +463,4 @@ export const CountProductsByCategory = async (category) => {
   console.log('count: ', snapshot.size);
   return snapshot.size;
 }
+

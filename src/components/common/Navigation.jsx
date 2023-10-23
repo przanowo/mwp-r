@@ -12,10 +12,33 @@ import logowhite from '../../logowhite.png'
 
 const Navigation = () => {
     const { user } = React.useContext(AuthContext); // Get the user from AuthContext
-    const [scrolled, setScrolled] = useState(false);
+    const [scrolled, setScrolled] = useState(true);
     const { cart } = React.useContext(CartContext);
+    const [ startedScrolling, setStartedScrolling] = useState(false);
     // const [hovered, setHovered] = useState(false);
-    // const { setSearchTerm } = useSearch();
+
+    const [isAtTop, setIsAtTop] = useState(true);
+
+    useEffect(() => {
+      // Function to handle scroll events
+      const handleScroll = () => {
+        if (window.scrollY > 0) {
+          // Page is not at the top
+          setIsAtTop(false);
+        } else {
+          // Page is at the top
+          setIsAtTop(true);
+        }
+      };
+  
+      // Add the scroll event listener when the component mounts
+      window.addEventListener('scroll', handleScroll);
+  
+      // Remove the scroll event listener when the component unmounts
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }, []);
 
     const handleLogout = async () => {
         try {
@@ -26,56 +49,48 @@ const Navigation = () => {
             console.error("Error logging out: ", error.message);
         }
     };
+    
+    // useEffect(() => {
+    //     const handleScroll = () => {
+    //         const snapContainer = document.querySelector('.snap-y');
+    //         if (snapContainer) {
+    //             const offset = snapContainer.scrollTop;
+    //             if (offset > 0 && !startedScrolling) {
+    //                 setScrolled(true);
+    //                 setStartedScrolling(false); // Update the state here
+    //             }
+    
+    //             if (offset === 0) {
+    //                 setScrolled(false);
+    //                 setStartedScrolling(false); // Update the state here
+    //             }
+    //         };
+    //     };
+    
+    //     // Attach the scroll listener if the element exists
+    //     const snapContainer = document.querySelector('.snap-y');
+    //     if (snapContainer) {
+    //         snapContainer.addEventListener('scroll', handleScroll);
+    //     }
+    
+    //     // Cleanup
+    //     return () => {
+    //         // Remove the event listener if the element exists
+    //         if (snapContainer) {
+    //             snapContainer.removeEventListener('scroll', handleScroll);
+    //         }
+    //     };
+    // }, []);
 
-    useEffect(() => {
-        let startedScrolling = false;
-        const handleScroll = () => {
-            const snapContainer = document.querySelector('.snap-y');
-            const offset = snapContainer.scrollTop;
-            if (offset > 0 && !startedScrolling) {
-                setScrolled(true);
-            }
-
-            if (offset === 0) {
-                setScrolled(false);
-                startedScrolling = false;
-            }
-        };
-
-        // Attach the scroll listener
-        const snapContainer = document.querySelector('.snap-y');
-        snapContainer.addEventListener('scroll', handleScroll);
-
-        // Cleanup
-        return () => {
-            snapContainer.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
-
-    const logoSrc = scrolled ? logoblack : logowhite;
+    const logoSrc = isAtTop ? logowhite : logoblack;
     const fixedLogoClasses = `${logoSrc}`;
-    const navbarClasses = scrolled ? 'bg-white text-black' : 'text-white';
+    const navbarClasses = isAtTop ? 'text-white' : 'bg-white text-black';
     const fixedNavbarClasses = `lg:fixed z-20 w-screen px-4 transition duration-200 ease-in-out sm:h-18 md:px-8 lg:px-2.5 ${navbarClasses}`;
 
-    // const links = [
-    //     // { label: 'Home', path: '/' },
-    //     { label: 'Shop', path: '/shop' },
-    //     // { label: 'Man', path: '/man' },
-    //     // { label: 'Woman', path: '/woman' },
-    //     // { label: 'Vintage', path: '/shop/vintage' },
-    //     // { label: 'Miniature', path: '/miniature' },
-    //     // { label: 'Sample', path: '/sample' },
-    //     // { label: 'About', path: '/about' },
-    //     // { label: 'Contact', path: '/contact' },
-    //     // { label: 'Sign In', path: '/signin' },
-    //     // { label: 'Sign Up', path: '/signup' },
-    //   ];
 
   return (
     <nav 
         className="lg: absolute z-20 h-26 sm:h-20 lg:h-20 overflow-hidden lg:mb-6"
-        // onMouseEnter={() => ksetHovered(true)} // When mouse enters
-        // onMouseLeave={() => setHovered(false)} // When mouse leaves
         >
         <div className={fixedNavbarClasses}>
             <div className="flex items-center justify-center lg:justify-between max-w-screen h-full w-full">
@@ -83,14 +98,11 @@ const Navigation = () => {
 
 {/* //desktop menu */}
                 <div className="flex text-center items-center">
-                    {/* <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop'> Shop </Link> */}
-                    {/* <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/vintage'> Vintage </Link> */}
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/parfum'> Perfume </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/miniature'> Miniature </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/sample'> Sample </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/soapandpowder'> Soap & Powder </Link>
                     <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/gift'> Gifts </Link>
-                    {/* <Link className='px-3 py-2 rounded-lg hover:bg-white/20 hover:text-lg' to='/shop/'> Search </Link> */}
                 </div>
                 <div className='lg:flex hidden ltr:md:ml-6 rtl:md:mr-6 ltr:xl:ml-10 rtl:xl:mr-10 py-7'>
                     {user ? ( // If user is logged in, show logout button

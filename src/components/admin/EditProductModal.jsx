@@ -64,7 +64,7 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
   const handleDelete = async () => {
     const confirmation = window.confirm("Are you sure you want to delete this product?");
     if (confirmation) {
-        for (const imageUrl of product.imageUrls) {
+        for (const imageUrl of product.images) {
             await deleteImageFromGSC(imageUrl);
           }
 
@@ -104,7 +104,7 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="sex"
-                    value={product.sex}
+                    value={editedProduct.sex}
                     onChange={handleChange}
                     required>
                     <option value="" disabled >Select an option</option>
@@ -120,7 +120,7 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="category"
-                    value={product.category}
+                    value={editedProduct.category}
                     onChange={handleChange}
                     required>
                     <option value="" disabled >Select an option</option>
@@ -138,7 +138,7 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="nowe"
-                    value={product.nowe}
+                    value={editedProduct.nowe}
                     onChange={handleChange}
                     required>
                     <option value="" disabled >Select an option</option>
@@ -153,7 +153,7 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="typ"
-                    value={product.typ}
+                    value={editedProduct.typ}
                     onChange={handleChange}
                     required>
                     <option value="" disabled >Select an option</option>
@@ -170,7 +170,7 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="show"
-                    value={product.show}
+                    value={editedProduct.show}
                     onChange={handleChange}
                     required>
                     <option value="" disabled >Select an option</option>
@@ -185,7 +185,7 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="magazine"
-                    value={product.magazine}
+                    value={editedProduct.magazine}
                     onChange={handleChange}
                     required>
                     <option value="" disabled >Select an option</option>
@@ -200,7 +200,7 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="liked"
-                    value={product.liked}
+                    value={editedProduct.liked}
                     onChange={handleChange}
                     required>
                     <option value="" disabled >Select an option</option>
@@ -215,7 +215,7 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
                 <select
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     name="featured"
-                    value={product.featured}
+                    value={editedProduct.featured}
                     onChange={handleChange}
                     required>
                     <option value="" disabled >Select an option</option>

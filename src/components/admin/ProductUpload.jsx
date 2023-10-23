@@ -43,7 +43,7 @@ const ProductUpload = () => {
 
         let imageUrls = [];
         for (let image of images) {
-            const imageUrl = await uploadImage(image, product.category);
+            const imageUrl = await uploadImage(image);
             imageUrls.push(imageUrl);
         }
       
