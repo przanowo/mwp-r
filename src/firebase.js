@@ -25,6 +25,7 @@ import {
   where,
   getCountFromServer,
   serverTimestamp,
+  onSnapshot,
 } from 'firebase/firestore';
 import {
   getStorage,
@@ -33,6 +34,7 @@ import {
   getDownloadURL,
   deleteObject,
 } from 'firebase/storage';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 import algoliasearch from 'algoliasearch/lite';
 
@@ -221,19 +223,25 @@ export const fetchProductsFromFirestore = async (lastVisibleProducts = {}) => {
     lastVisible: newLastVisibleProducts,
   };
 };
+export const fetchProductFromFirestore = async (productId) => {
+  try {
+    console.log('Fetching product with ID:', productId);
 
-export const fetchProductFromFirestore = async (category, productId) => {
-  const productRef = doc(firestore, 'products', productId);
-  const productDoc = await getDoc(productRef);
+    const productRef = doc(firestore, 'products', productId);
+    const productDoc = await getDoc(productRef);
 
-  if (!productDoc.exists) {
-    return null;
+    if (!productDoc.data()) {
+      return null;
+    } else {
+      return {
+        id: productDoc.id,
+        ...productDoc.data(),
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    return null; // or you can handle the error in another way
   }
-
-  return {
-    id: productDoc.id,
-    ...productDoc.data(),
-  };
 };
 
 const fetchProducts = async (
@@ -332,7 +340,7 @@ export const firstBatchOfProducts = async (category, limitNum) => {
   });
 
   const lastProduct = querySnapshot.docs[querySnapshot.docs.length - 1];
-  console.log('lastProduct', lastProduct);
+  // console.log('lastProduct', lastProduct);
 
   return {
     products,
@@ -390,22 +398,25 @@ export const addProductToUserCollection = async (
   productId,
   product
 ) => {
-  // // console.log(product);
   const userProductRef = doc(firestore, 'users', userId, 'products', productId);
-  console.log('firestore', 'users', userId, 'products', productId);
 
-  // Check if the product already exists in Firestore
+  // Check if the product already exists in Firestore for this user
   const productSnapshot = await getDoc(userProductRef);
 
   if (productSnapshot.exists()) {
-    // Product exists, increment its quantity
+    // Product exists in the user's cart, increment its quantity
     const currentQuantity = productSnapshot.data().quantity || 0;
     await updateDoc(userProductRef, { quantity: currentQuantity + 1 });
   } else {
-    // Product doesn't exist, set it with the given quantity
-    await setDoc(userProductRef, product, { merge: true });
+    // Product doesn't exist in the user's cart, store the product's ID and the given quantity
+    await setDoc(
+      userProductRef,
+      { id: productId, quantity: product.quantity },
+      { merge: true }
+    );
   }
 };
+
 export const getUserProductRef = (userId, productId) => {
   return doc(firestore, 'users', userId, 'products', productId);
 };
@@ -433,20 +444,33 @@ export const decreaseProductQuantityInFirestore = async (userId, productId) => {
   }
 };
 export const removeProductFromUserCollection = async (userId, productId) => {
-  const userProductRef = doc(firestore, 'users', userId, 'products', productId);
+  const userProductRef = getUserProductRef(userId, productId);
   await deleteDoc(userProductRef);
 };
+
 export const fetchUserCart = async (userId) => {
   const productsRef = collection(doc(firestore, 'users', userId), 'products');
   const productSnapshot = await getDocs(productsRef);
 
   const cart = [];
-  productSnapshot.forEach((doc) => {
-    cart.push({ ...doc.data(), id: doc.id });
-  });
+  for (let docu of productSnapshot.docs) {
+    let cartItem = docu.data();
+    const productRef = doc(firestore, 'products', cartItem.id);
+    const productData = await getDoc(productRef);
+
+    if (productData.exists()) {
+      // Add the product data and quantity to the cart
+      cart.push({
+        ...productData.data(),
+        id: productData.id,
+        quantity: cartItem.quantity,
+      });
+    }
+  }
 
   return cart;
 };
+
 export const updateProductInFirestore = async (productId, updatedData) => {
   const productRef = doc(firestore, 'products', productId);
   if (!productId) {
@@ -577,4 +601,68 @@ export const CountProductsByCategory = async (category) => {
   const snapshot = await getDocs(queryFilter); // Use the queryFilter variable here
   console.log('count: ', snapshot.size);
   return snapshot.size;
+};
+
+export const getCheckoutUrl = async (priceId) => {
+  const userId = auth.currentUser.uid;
+  if (!userId) throw new Error('User is not authenticated');
+
+  const checkoutSessionRef = collection(
+    firestore,
+    'users',
+    userId,
+    'checkout_sessions'
+  );
+
+  const docRef = await addDoc(checkoutSessionRef, {
+    price: priceId,
+    success_url: window.location.origin,
+    cancel_url: window.location.origin,
+    mode: 'payment', // to indicate this is a one-time payment instead of a subscription.
+  });
+
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onSnapshot(docRef, (snap) => {
+      const { error, url } = snap.data();
+      if (error) {
+        unsubscribe();
+        reject(new Error(`An error occurred: ${error.message}`));
+      }
+      if (url) {
+        console.log('Stripe Checkout URL:', url);
+        unsubscribe();
+        resolve(url);
+      }
+    });
+  });
+};
+
+export const getPortalUrl = async () => {
+  const user = auth.currentUser;
+
+  let dataWithUrl;
+  try {
+    const functions = getFunctions(app, 'us-central1');
+    const functionRef = httpsCallable(
+      functions,
+      'ext-firestore-stripe-payments-createPortalLink'
+    );
+    const { data } = await functionRef({
+      customerId: user?.uid,
+      returnUrl: window.location.origin,
+    });
+
+    dataWithUrl = data;
+    console.log('Reroute to Stripe portal: ', dataWithUrl.url);
+  } catch (error) {
+    console.error(error);
+  }
+
+  return new Promise((resolve, reject) => {
+    if (dataWithUrl.url) {
+      resolve(dataWithUrl.url);
+    } else {
+      reject(new Error('No url returned'));
+    }
+  });
 };

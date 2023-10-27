@@ -13,7 +13,7 @@ const ProductCard = ({ product, productId }) => {
 
   const handleAddToCart = () => {
     if (user) {
-      console.log(productId);
+      console.log('Adding to cart, ProductId:', productId);
       addToCart(product, productId); // assuming product object has an 'id' property which is equal to 'productId'
       // Perform the "Add to cart" action
     } else {
@@ -73,14 +73,16 @@ const ProductCard = ({ product, productId }) => {
         ) : null}
       </div>
       {/* Conditionally render the EditProductModal */}
-      {isEditModalOpen && (
-        <EditProductModal
-          product={currentProduct}
-          onClose={handleCloseModal}
-          onSave={handleSaveProduct}
-          productId={productId}
-        />
-      )}
+      {isEditModalOpen &&
+        (console.log(currentProduct),
+        (
+          <EditProductModal
+            product={currentProduct}
+            onClose={handleCloseModal}
+            onSave={handleSaveProduct}
+            productId={productId}
+          />
+        ))}
     </div>
   );
 };
