@@ -34,7 +34,7 @@ import {
   getDownloadURL,
   deleteObject,
 } from 'firebase/storage';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+// import { getFunctions, httpsCallable } from 'firebase/functions';
 
 import algoliasearch from 'algoliasearch/lite';
 
@@ -251,8 +251,8 @@ const fetchProducts = async (
 ) => {
   const q = query(
     collection(firestore, 'products'),
-    ...queryConditions,
     where('show', '==', 'yes'),
+    ...queryConditions,
     ...queryConditionOrder,
     limit(limitNum || 6)
   );
@@ -265,7 +265,6 @@ const fetchProducts = async (
 
   return products;
 };
-
 export const fetchFeaturedProducts = async (limitNum) => {
   const queryConditions = [where('featured', '==', 'yes')];
   const queryConditionOrder = [orderBy('createdAt', 'desc')];
@@ -277,7 +276,6 @@ export const fetchFeaturedProducts = async (limitNum) => {
     ),
   };
 };
-
 export const fetchLikedProducts = async (limitNum) => {
   const queryConditions = [where('liked', '==', 'yes')];
   const queryConditionOrder = [orderBy('createdAt', 'desc')];
@@ -289,7 +287,6 @@ export const fetchLikedProducts = async (limitNum) => {
     ),
   };
 };
-
 export const fetchSaleProducts = async (limitNum) => {
   const queryConditions = [where('discount', '>', 0)];
   const queryConditionOrder = [orderBy('discount', 'desc')];
@@ -323,7 +320,6 @@ export const fetchWomanProducts = async (limitNum) => {
     ),
   };
 };
-
 export const firstBatchOfProducts = async (category, limitNum) => {
   const q = query(
     collection(firestore, 'products'),
@@ -347,7 +343,6 @@ export const firstBatchOfProducts = async (category, limitNum) => {
     lastProduct,
   };
 };
-
 export const nextBatchOfProducts = async (
   category,
   limitNum,
@@ -374,7 +369,6 @@ export const nextBatchOfProducts = async (
     lastProduct,
   };
 };
-
 export const searchProductsByTitle = async (category, searchTerm) => {
   try {
     const { hits } = await index.search(searchTerm, {
@@ -392,7 +386,6 @@ export const searchProductsByTitle = async (category, searchTerm) => {
     return [];
   }
 };
-
 export const addProductToUserCollection = async (
   userId,
   productId,
@@ -416,7 +409,6 @@ export const addProductToUserCollection = async (
     );
   }
 };
-
 export const getUserProductRef = (userId, productId) => {
   return doc(firestore, 'users', userId, 'products', productId);
 };
@@ -447,7 +439,6 @@ export const removeProductFromUserCollection = async (userId, productId) => {
   const userProductRef = getUserProductRef(userId, productId);
   await deleteDoc(userProductRef);
 };
-
 export const fetchUserCart = async (userId) => {
   const productsRef = collection(doc(firestore, 'users', userId), 'products');
   const productSnapshot = await getDocs(productsRef);
@@ -470,7 +461,6 @@ export const fetchUserCart = async (userId) => {
 
   return cart;
 };
-
 export const updateProductInFirestore = async (productId, updatedData) => {
   const productRef = doc(firestore, 'products', productId);
   if (!productId) {
@@ -603,66 +593,109 @@ export const CountProductsByCategory = async (category) => {
   return snapshot.size;
 };
 
-export const getCheckoutUrl = async (priceId) => {
-  const userId = auth.currentUser.uid;
-  if (!userId) throw new Error('User is not authenticated');
+// export const getCheckoutUrl = async (priceId) => {
+//   const userId = auth.currentUser.uid;
+//   if (!userId) throw new Error('User is not authenticated');
 
-  const checkoutSessionRef = collection(
-    firestore,
-    'users',
-    userId,
-    'checkout_sessions'
-  );
+//   const checkoutSessionRef = collection(
+//     firestore,
+//     'users',
+//     userId,
+//     'checkout_sessions'
+//   );
 
-  const docRef = await addDoc(checkoutSessionRef, {
-    price: priceId,
-    success_url: window.location.origin,
-    cancel_url: window.location.origin,
-    mode: 'payment', // to indicate this is a one-time payment instead of a subscription.
-  });
+//   const docRef = await addDoc(checkoutSessionRef, {
+//     price: priceId,
+//     success_url: window.location.origin,
+//     cancel_url: window.location.origin,
+//     mode: 'payment', // to indicate this is a one-time payment instead of a subscription.
+//   });
 
-  return new Promise((resolve, reject) => {
-    const unsubscribe = onSnapshot(docRef, (snap) => {
-      const { error, url } = snap.data();
-      if (error) {
-        unsubscribe();
-        reject(new Error(`An error occurred: ${error.message}`));
-      }
-      if (url) {
-        console.log('Stripe Checkout URL:', url);
-        unsubscribe();
-        resolve(url);
-      }
-    });
-  });
-};
+//   return new Promise((resolve, reject) => {
+//     const unsubscribe = onSnapshot(docRef, (snap) => {
+//       const { error, url } = snap.data();
+//       if (error) {
+//         unsubscribe();
+//         reject(new Error(`An error occurred: ${error.message}`));
+//       }
+//       if (url) {
+//         console.log('Stripe Checkout URL:', url);
+//         unsubscribe();
+//         resolve(url);
+//       }
+//     });
+//   });
+// };
 
-export const getPortalUrl = async () => {
-  const user = auth.currentUser;
+// export const getPortalUrl = async () => {
+//   const user = auth.currentUser;
 
-  let dataWithUrl;
-  try {
-    const functions = getFunctions(app, 'us-central1');
-    const functionRef = httpsCallable(
-      functions,
-      'ext-firestore-stripe-payments-createPortalLink'
-    );
-    const { data } = await functionRef({
-      customerId: user?.uid,
-      returnUrl: window.location.origin,
-    });
+//   let dataWithUrl;
+//   try {
+//     const functions = getFunctions(app, 'us-central1');
+//     const functionRef = httpsCallable(
+//       functions,
+//       'ext-firestore-stripe-payments-createPortalLink'
+//     );
+//     const { data } = await functionRef({
+//       customerId: user?.uid,
+//       returnUrl: window.location.origin,
+//     });
 
-    dataWithUrl = data;
-    console.log('Reroute to Stripe portal: ', dataWithUrl.url);
-  } catch (error) {
-    console.error(error);
-  }
+//     dataWithUrl = data;
+//     console.log('Reroute to Stripe portal: ', dataWithUrl.url);
+//   } catch (error) {
+//     console.error(error);
+//   }
 
-  return new Promise((resolve, reject) => {
-    if (dataWithUrl.url) {
-      resolve(dataWithUrl.url);
-    } else {
-      reject(new Error('No url returned'));
+//   return new Promise((resolve, reject) => {
+//     if (dataWithUrl.url) {
+//       resolve(dataWithUrl.url);
+//     } else {
+//       reject(new Error('No url returned'));
+//     }
+//   });
+// };
+
+export const createStripeCheckoutSession = async (totalPrice) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkoutSessionRef = await addDoc(
+        collection(
+          firestore,
+          'users',
+          auth.currentUser.uid,
+          'checkout_sessions'
+        ),
+        {
+          line_items: [
+            {
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: 'Cart checkout',
+                },
+                unit_amount: totalPrice * 100, // Convert to cents
+              },
+              quantity: 1,
+            },
+          ],
+          mode: 'payment',
+          success_url: window.location.origin,
+          cancel_url: window.location.origin,
+        }
+      );
+
+      // Now attach the listener to the DocumentReference
+      onSnapshot(checkoutSessionRef, (snap) => {
+        const { sessionId } = snap.data();
+        if (sessionId) {
+          resolve(sessionId); // Return the session ID when it's available
+        }
+      });
+    } catch (error) {
+      console.error('Error creating Stripe checkout session:', error);
+      reject(error);
     }
   });
 };

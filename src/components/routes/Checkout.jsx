@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Cart from '../product/Cart';
 import ShippingDetails from '../product/ShippingDetails';
 // import PaymentForm from '../product/PaymentForm';
 import { SlArrowDown } from 'react-icons/sl';
 import Footer from '../common/Footer';
-import { getCheckoutUrl } from '../../firebase';
+import { createStripeCheckoutSession } from '../../firebase';
+import { CartContext } from '../../hooks/CartContext';
 
 const Checkout = () => {
   const [cartExpanded, setCartExpanded] = useState(true);
   const [shippingExpanded, setShippingExpanded] = useState(false);
   const [paymentExpanded, setPaymentExpanded] = useState(false);
+  const { getTotalPrice } = useContext(CartContext);
+  const totalPrice = getTotalPrice();
 
   const handleCartExpand = () => {
     setCartExpanded(true);
@@ -29,10 +32,21 @@ const Checkout = () => {
   //   setPaymentExpanded(true);
   // };
 
+  // const processPayment = async () => {
+  //   try {
+  //     await createStripeCheckoutSession(totalPrice);
+  //   } catch (error) {
+  //     console.error('Error processing payment:', error);
+  //   }
+  // };
+
   const processPayment = async () => {
     try {
-      const checkoutUrl = await getCheckoutUrl('YOUR_PRICE_ID_HERE'); // replace 'YOUR_PRICE_ID_HERE' with the actual price ID.
-      window.location.href = checkoutUrl;
+      const sessionId = await createStripeCheckoutSession(totalPrice);
+      const stripe = window.Stripe(
+        'pk_test_51MhsHfBhAs9urMNozOuHDQ4iyRvumObUZSgpT7WGzUT3i0MNqAXllPNzZPgvPJayIY7CzA7Tn5ja3o2BwyuJXaTd00Ylgp0NKz'
+      );
+      stripe.redirectToCheckout({ sessionId });
     } catch (error) {
       console.error('Error processing payment:', error);
     }

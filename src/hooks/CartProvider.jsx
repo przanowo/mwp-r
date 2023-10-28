@@ -6,6 +6,7 @@ import {
   fetchUserCart,
   decreaseProductQuantityInFirestore,
   increaseProductQuantityInFirestore,
+  // getTotalPrice,
 } from '../firebase';
 import AuthContext from './AuthContext'; // import AuthContext
 
@@ -15,10 +16,13 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
+      console.log(user);
       // Fetch cart items when user logs in or app initializes
       fetchUserCart(user.uid)
         .then((fetchedCart) => setCart(fetchedCart))
         .catch((error) => console.error('Failed to fetch cart:', error));
+    } else {
+      setCart([]);
     }
   }, [user]); // The useEffect depends on the `user`, so it runs every time `user` changes
 
@@ -98,6 +102,10 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const getTotalPrice = () => {
+    return cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -106,6 +114,7 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         increaseQuantity,
         decreaseQuantity,
+        getTotalPrice,
       }}
     >
       {children}
