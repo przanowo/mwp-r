@@ -593,70 +593,6 @@ export const CountProductsByCategory = async (category) => {
   return snapshot.size;
 };
 
-// export const getCheckoutUrl = async (priceId) => {
-//   const userId = auth.currentUser.uid;
-//   if (!userId) throw new Error('User is not authenticated');
-
-//   const checkoutSessionRef = collection(
-//     firestore,
-//     'users',
-//     userId,
-//     'checkout_sessions'
-//   );
-
-//   const docRef = await addDoc(checkoutSessionRef, {
-//     price: priceId,
-//     success_url: window.location.origin,
-//     cancel_url: window.location.origin,
-//     mode: 'payment', // to indicate this is a one-time payment instead of a subscription.
-//   });
-
-//   return new Promise((resolve, reject) => {
-//     const unsubscribe = onSnapshot(docRef, (snap) => {
-//       const { error, url } = snap.data();
-//       if (error) {
-//         unsubscribe();
-//         reject(new Error(`An error occurred: ${error.message}`));
-//       }
-//       if (url) {
-//         console.log('Stripe Checkout URL:', url);
-//         unsubscribe();
-//         resolve(url);
-//       }
-//     });
-//   });
-// };
-
-// export const getPortalUrl = async () => {
-//   const user = auth.currentUser;
-
-//   let dataWithUrl;
-//   try {
-//     const functions = getFunctions(app, 'us-central1');
-//     const functionRef = httpsCallable(
-//       functions,
-//       'ext-firestore-stripe-payments-createPortalLink'
-//     );
-//     const { data } = await functionRef({
-//       customerId: user?.uid,
-//       returnUrl: window.location.origin,
-//     });
-
-//     dataWithUrl = data;
-//     console.log('Reroute to Stripe portal: ', dataWithUrl.url);
-//   } catch (error) {
-//     console.error(error);
-//   }
-
-//   return new Promise((resolve, reject) => {
-//     if (dataWithUrl.url) {
-//       resolve(dataWithUrl.url);
-//     } else {
-//       reject(new Error('No url returned'));
-//     }
-//   });
-// };
-
 export const createStripeCheckoutSession = async (totalPrice) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -681,8 +617,8 @@ export const createStripeCheckoutSession = async (totalPrice) => {
             },
           ],
           mode: 'payment',
-          success_url: window.location.origin,
-          cancel_url: window.location.origin,
+          success_url: `${window.location.origin}/payment-success?order={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${window.location.origin}/payment-failed`,
         }
       );
 
@@ -698,4 +634,58 @@ export const createStripeCheckoutSession = async (totalPrice) => {
       reject(error);
     }
   });
+};
+
+export const saveOrderDetails = async (
+  cartItems,
+  shippingDetails,
+  userDetails,
+  paymentStatus,
+  sessionId
+) => {
+  try {
+    const ordersRef = collection(
+      firestore,
+      'checkout',
+      auth.currentUser.uid,
+      'orders'
+    );
+    const orderDocRef = doc(ordersRef, sessionId);
+    // Combine all details
+    const orderData = {
+      cartItems,
+      shippingDetails,
+      userDetails,
+      payment: paymentStatus,
+      StripeSessionId: sessionId,
+    };
+
+    await setDoc(orderDocRef, orderData);
+  } catch (error) {
+    console.error('Error saving order details:', error);
+    return null;
+  }
+};
+
+export const updateOrderPaymentStatus = async (userId, sessionId, status) => {
+  try {
+    const orderRef = doc(firestore, 'checkout', userId, 'orders', sessionId);
+    await updateDoc(orderRef, { payment: status });
+
+    console.log('Order payment status updated successfully.');
+  } catch (error) {
+    console.error('Error updating order payment status:', error);
+  }
+};
+
+export const fetchOrdersFromFirestore = async () => {
+  const ordersRef = collection(firestore, 'checkout');
+  const ordersSnapshot = await getDocs(ordersRef);
+
+  const orders = [];
+  ordersSnapshot.forEach((doc) => {
+    orders.push({ ...doc.data(), id: doc.id });
+  });
+
+  return orders;
 };

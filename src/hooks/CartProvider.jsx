@@ -106,6 +106,19 @@ export const CartProvider = ({ children }) => {
     return cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   };
 
+  const clearCart = async () => {
+    // Clear the local cart state
+
+    // If a user is logged in, remove all items from the user's Firestore cart collection
+    if (user) {
+      const userCartItems = await fetchUserCart(user.uid);
+      for (const item of userCartItems) {
+        await removeProductFromUserCollection(user.uid, item.id);
+      }
+    }
+    setCart([]);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -115,6 +128,7 @@ export const CartProvider = ({ children }) => {
         increaseQuantity,
         decreaseQuantity,
         getTotalPrice,
+        clearCart,
       }}
     >
       {children}

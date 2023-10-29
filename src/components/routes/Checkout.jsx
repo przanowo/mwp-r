@@ -1,55 +1,107 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import Cart from '../product/Cart';
-import ShippingDetails from '../product/ShippingDetails';
-// import PaymentForm from '../product/PaymentForm';
 import { SlArrowDown } from 'react-icons/sl';
 import Footer from '../common/Footer';
-import { createStripeCheckoutSession } from '../../firebase';
+import { createStripeCheckoutSession, saveOrderDetails } from '../../firebase';
 import { CartContext } from '../../hooks/CartContext';
+import AuthContext from '../../hooks/AuthContext';
 
 const Checkout = () => {
   const [cartExpanded, setCartExpanded] = useState(true);
   const [shippingExpanded, setShippingExpanded] = useState(false);
-  const [paymentExpanded, setPaymentExpanded] = useState(false);
-  const { getTotalPrice } = useContext(CartContext);
+  const { getTotalPrice, cart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
   const totalPrice = getTotalPrice();
+  const formRef = useRef(null);
+
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    addressLine1: '',
+    addressLine2: '',
+    county: '',
+    city: '',
+    postcode: '',
+    country: '',
+    phoneNumber: '',
+    email: '',
+  });
 
   const handleCartExpand = () => {
     setCartExpanded(true);
     setShippingExpanded(false);
-    setPaymentExpanded(false);
   };
 
   const handleShippingExpand = () => {
-    setCartExpanded(false);
     setShippingExpanded(true);
-    setPaymentExpanded(false);
+    setCartExpanded(false);
   };
 
-  // const handlePaymentExpand = () => {
-  //   setCartExpanded(false);
-  //   setShippingExpanded(false);
-  //   setPaymentExpanded(true);
-  // };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-  // const processPayment = async () => {
-  //   try {
-  //     await createStripeCheckoutSession(totalPrice);
-  //   } catch (error) {
-  //     console.error('Error processing payment:', error);
-  //   }
-  // };
+  const processPayment = async (e) => {
+    e.preventDefault();
 
-  const processPayment = async () => {
+    if (!formRef.current?.checkValidity()) {
+      alert('Please fill in all the required fields.');
+      return;
+    }
+
     try {
-      const sessionId = await createStripeCheckoutSession(totalPrice);
-      const stripe = window.Stripe(
-        'pk_test_51MhsHfBhAs9urMNozOuHDQ4iyRvumObUZSgpT7WGzUT3i0MNqAXllPNzZPgvPJayIY7CzA7Tn5ja3o2BwyuJXaTd00Ylgp0NKz'
-      );
-      stripe.redirectToCheckout({ sessionId });
+      const cartItems = cart;
+      const shippingDetails = formData;
+      const paymentStatus = 'pending';
+
+      let sessionId;
+      try {
+        sessionId = await createStripeCheckoutSession(totalPrice);
+      } catch (error) {
+        throw new Error(
+          'Failed to create Stripe checkout session: ' + error.message
+        );
+      }
+
+      try {
+        await saveOrderDetails(
+          cartItems,
+          shippingDetails,
+          user.uid,
+          paymentStatus,
+          sessionId
+        );
+      } catch (error) {
+        throw new Error('Failed to save order details: ' + error.message);
+      }
+
+      try {
+        const stripe = window.Stripe(
+          'pk_test_51MhsHfBhAs9urMNozOuHDQ4iyRvumObUZSgpT7WGzUT3i0MNqAXllPNzZPgvPJayIY7CzA7Tn5ja3o2BwyuJXaTd00Ylgp0NKz'
+        );
+        stripe.redirectToCheckout({ sessionId });
+      } catch (error) {
+        throw new Error(
+          'Failed to redirect to Stripe checkout: ' + error.message
+        );
+      }
     } catch (error) {
       console.error('Error processing payment:', error);
     }
+
+    setFormData({
+      firstName: '',
+      lastName: '',
+      addressLine1: '',
+      addressLine2: '',
+      county: '',
+      city: '',
+      postcode: '',
+      country: '',
+      phoneNumber: '',
+      email: '',
+    });
   };
 
   return (
@@ -79,39 +131,137 @@ const Checkout = () => {
       >
         {!shippingExpanded && (
           <button className='flex items-center p-3 text-3xl'>
-            Add Shipping Address
+            Process Payment
           </button>
         )}
         <button className={`p-4 ${shippingExpanded ? 'hidden' : ''}`}>
           <SlArrowDown />
         </button>
-        {shippingExpanded && <ShippingDetails />}
-      </div>
-      <div className='flex max-w-4xl justify-center items-center mx-auto text-xl font-semibold rounded bg-gray-200/50 my-4 '>
-        {!paymentExpanded && (
-          <button
-            onClick={processPayment} // Here is the modification
-            className='flex items-center p-3 text-3xl'
-          >
-            Process Payment
-          </button>
+        {shippingExpanded && (
+          <div className='flex p-6 w-full'>
+            <form className='w-full' ref={formRef}>
+              <h2 className='text-center text-4xl p-4'>Shipping Details</h2>
+              <div className='flex flex-col p-1'>
+                <label>First Name: </label>
+                <input
+                  type='text'
+                  name='firstName'
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className='border-solid border-2 border-black/25 bg-white/25'
+                  required
+                />
+              </div>
+              <div className='flex flex-col p-1'>
+                <label>Last Name: </label>
+                <input
+                  type='text'
+                  name='lastName'
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  className='border-solid border-2 border-black/25 bg-white/25'
+                  required
+                />
+              </div>
+              <div className='flex flex-col p-1 '>
+                <label>Address Line 1: </label>
+                <input
+                  type='text'
+                  name='addressLine1'
+                  value={formData.addressLine1}
+                  onChange={handleChange}
+                  className='border-solid border-2 border-black/25 bg-white/25 w-full'
+                  required
+                />
+              </div>
+              <div className='flex flex-col p-1'>
+                <label>Address Line 2: </label>
+                <input
+                  type='text'
+                  name='addressLine2'
+                  value={formData.addressLine2}
+                  onChange={handleChange}
+                  className='border-solid border-2 border-black/25 bg-white/25'
+                />
+              </div>
+              <div className='flex flex-col p-1'>
+                <label>County</label>
+                <input
+                  type='text'
+                  name='county'
+                  value={formData.county}
+                  onChange={handleChange}
+                  className='border-solid border-2 border-black/25 bg-white/25'
+                />
+              </div>
+              <div className='flex flex-col p-1'>
+                <label>City</label>
+                <input
+                  type='text'
+                  name='city'
+                  value={formData.city}
+                  onChange={handleChange}
+                  className='border-solid border-2 border-black/25 bg-white/25'
+                  required
+                />
+              </div>
+              <div className='flex flex-col p-1'>
+                <label>Postcode</label>
+                <input
+                  type='text'
+                  name='postcode'
+                  value={formData.postcode}
+                  onChange={handleChange}
+                  className='border-solid border-2 border-black/25 bg-white/25'
+                  required
+                />
+              </div>
+              <div className='flex flex-col p-1'>
+                <label>Country</label>
+                <input
+                  type='text'
+                  name='country'
+                  value={formData.country}
+                  onChange={handleChange}
+                  className='border-solid border-2 border-black/25 bg-white/25'
+                  required
+                />
+              </div>
+              <div className='flex flex-col p-1'>
+                <label>Phone Number</label>
+                <input
+                  type='text'
+                  name='phoneNumber'
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  className='border-solid border-2 border-black/25 bg-white/25'
+                  required
+                />
+              </div>
+              <div className='flex flex-col p-1'>
+                <label>Email</label>
+                <input
+                  type='email'
+                  name='email'
+                  value={formData.email}
+                  onChange={handleChange}
+                  className='border-solid border-2 border-black/25 bg-white/25'
+                  required
+                />
+              </div>
+              <div className='flex justify-center p-2'>
+                <button
+                  onClick={processPayment}
+                  className='border-black border-2 p-2 rounded-lg hover:bg-gray-600/50 text-2xl'
+                >
+                  Process Payment
+                </button>
+              </div>
+            </form>
+          </div>
         )}
       </div>
 
-      {/* <div className='flex max-w-4xl justify-center items-center mx-auto text-xl font-semibold rounded bg-gray-200/50 my-4'>
-        {!paymentExpanded && (
-          <button
-            onClick={handlePaymentExpand}
-            className='flex items-center p-3 text-3xl'
-          >
-            Process Payment
-          </button>
-        )}
-        {paymentExpanded && <PaymentForm />}
-        <button className={`p-4 ${paymentExpanded ? 'hidden' : ''}`}>
-          <SlArrowDown />
-        </button>
-      </div> */}
       <div className=''>
         <Footer />
       </div>
