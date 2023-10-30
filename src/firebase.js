@@ -26,6 +26,7 @@ import {
   getCountFromServer,
   serverTimestamp,
   onSnapshot,
+  collectionGroup,
 } from 'firebase/firestore';
 import {
   getStorage,
@@ -37,6 +38,7 @@ import {
 // import { getFunctions, httpsCallable } from 'firebase/functions';
 
 import algoliasearch from 'algoliasearch/lite';
+// import { CollectionGroup } from 'firebase-admin/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -641,7 +643,8 @@ export const saveOrderDetails = async (
   shippingDetails,
   userDetails,
   paymentStatus,
-  sessionId
+  sessionId,
+  totalPrice
 ) => {
   try {
     const ordersRef = collection(
@@ -658,6 +661,7 @@ export const saveOrderDetails = async (
       userDetails,
       payment: paymentStatus,
       StripeSessionId: sessionId,
+      total: totalPrice,
     };
 
     await setDoc(orderDocRef, orderData);
@@ -678,12 +682,13 @@ export const updateOrderPaymentStatus = async (userId, sessionId, status) => {
   }
 };
 
-export const fetchOrdersFromFirestore = async () => {
-  const ordersRef = collection(firestore, 'checkout');
+export const getAllOrders = async () => {
+  const ordersRef = collectionGroup(firestore, 'orders');
   const ordersSnapshot = await getDocs(ordersRef);
 
   const orders = [];
   ordersSnapshot.forEach((doc) => {
+    console.log(doc.id, ' => ', doc.data());
     orders.push({ ...doc.data(), id: doc.id });
   });
 

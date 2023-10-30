@@ -7,6 +7,7 @@ import { CartContext } from '../../hooks/CartContext';
 import { useContext } from 'react';
 import EditProductModal from '../admin/EditProductModal'; // import the modal component
 import AuthContext from '../../hooks/AuthContext';
+import ImageGallery from './ImageGallery';
 
 const Product = () => {
   const navigate = useNavigate();
@@ -15,12 +16,26 @@ const Product = () => {
   const [product, setProduct] = useState(null);
   const { addToCart } = useContext(CartContext);
   const [loading, setLoading] = useState(true);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
-  const handleAddToCart = () => {
-    addToCart(product); // assuming product object has an 'id' property which is equal to 'productId'
+  const galleryImages =
+    product && product.images && product.images.length > 0
+      ? product.images
+      : [product?.mainImage];
+
+  const handleImageClick = () => {
+    setIsGalleryOpen(true);
   };
 
-  console.log('product', product);
+  const handleCloseGallery = () => {
+    setIsGalleryOpen(false);
+  };
+
+  const handleAddToCart = () => {
+    addToCart(product, productId); // assuming product object has an 'id' property which is equal to 'productId'
+  };
+
+  console.log('product', product, productId);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -54,30 +69,21 @@ const Product = () => {
     loadProduct();
   }, [productId, navigate]);
 
-  // useEffect(() => {
-  //   const loadProduct = async () => {
-  //     const fetchedProduct = await fetchProductFromFirestore(productId);
-  //     setProduct(fetchedProduct);
-  //     setLoading(false); // Set loading to false here
-  //   };
-
-  //   loadProduct();
-  // }, [productId]);
-
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className='mt-24 p-6 bg-white shadow-lg rounded-md'>
-      <div className='flex'>
+    <div className='flex mx-auto mt-24 p-6 bg-white shadow-lg rounded-md w-5/6 items-center justify-center'>
+      <div className='flex items-center justify-center'>
         <div className='w-1/2 pr-4'>
           <img
             src={product.mainImage}
             alt={product.title}
-            className='w-full h-96 object-cover mb-4 rounded-md'
+            className='w-full h-2/3 object-cover mb-4 rounded-md cursor-pointer'
+            onClick={handleImageClick}
           />
-          <div className='grid grid-cols-3 gap-2'>
+          <div className='grid grid-cols-3 gap-2 cursor-pointer w-2/3'>
             {product.images &&
               product.images.length > 0 &&
               product.images.map((url, idx) => (
@@ -86,6 +92,7 @@ const Product = () => {
                   src={url}
                   alt={`Product ${idx}`}
                   className='w-full h-24 object-cover rounded-md'
+                  onClick={handleImageClick}
                 />
               ))}
           </div>
@@ -97,8 +104,14 @@ const Product = () => {
             {product.brand} {product.model}{' '}
             {product.mL ? product.mL + 'ml' : null}
           </p>
-          <p className='text-gray-600 mb-4'>{product.description}</p>
-          <p className='text-xl font-bold mb-2'>${product.price}</p>
+          <p className='text-gray-600 my-6'>
+            Description: {product.description}
+          </p>
+          <p className='text-gray-600'>Stock: {product.quantity}</p>
+          <p className='text-gray-600'>Sex: {product.sex}</p>
+          <p className='text-gray-600'>Category: {product.typ}</p>
+          <p className='text-gray-600'>Size: {product.size} ml</p>
+          <p className='text-xl font-bold my-4'>${product.price}</p>
           {/* <p className="mb-2"><span className="font-semibold">Brand:</span> {product.brand}</p> */}
           {/* <p className="mb-2">{product.ml} ml</p> */}
           <button
@@ -125,6 +138,9 @@ const Product = () => {
           onSave={handleSaveProduct}
           productId={productId}
         />
+      )}
+      {isGalleryOpen && product.images && (
+        <ImageGallery images={galleryImages} onClose={handleCloseGallery} />
       )}
     </div>
   );

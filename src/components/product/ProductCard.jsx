@@ -63,7 +63,7 @@ const ProductCard = ({ product, productId }) => {
         >
           Add to cart
         </button>
-        {user && user.uid === 'gwCvu8CwOCToe2owDmtKEHm7Cvj2' ? (
+        {user && user.uid === 'sGTDrSYDRBUcvzQVL5N2GiSNVE82' ? (
           <button
             className='bg-gray-300 text-black text-center text-sm px-2 py-1 rounded-md hover:bg-gray-400 transition duration-200'
             onClick={handleEditProduct}

@@ -49,7 +49,7 @@ function App() {
   ];
 
   return (
-    <div className='flex flex-col bg-gray-200 '>
+    <div className='flex flex-col bg-gray-200 min-h-screen'>
       <Navigation />
       <Routes>
         {/* Map through the routes array and render the routes */}

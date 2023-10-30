@@ -70,7 +70,8 @@ const Checkout = () => {
           shippingDetails,
           user.uid,
           paymentStatus,
-          sessionId
+          sessionId,
+          totalPrice
         );
       } catch (error) {
         throw new Error('Failed to save order details: ' + error.message);

@@ -5,8 +5,8 @@ import AuthContext from './AuthContext';
 const ProtectedRoute = () => {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
-  
-  const isAdmin = user && user.uid === 'gwCvu8CwOCToe2owDmtKEHm7Cvj2';
+
+  const isAdmin = user && user.uid === 'sGTDrSYDRBUcvzQVL5N2GiSNVE82';
 
   if (loading) {
     return <div>Loading...</div>;

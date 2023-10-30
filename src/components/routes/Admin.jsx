@@ -30,7 +30,7 @@ const Admin = () => {
             to='orders'
             className='bg-red-500 hover:bg-yellow-600 text-white p-2 rounded text-center font-medium'
           >
-            Notes
+            Orders
           </Link>
           {/* <button className='bg-red-500 hover:bg-red-600 text-white p-2 rounded text-center font-medium' onClick={updateProducts}>
             Trigger data update.
