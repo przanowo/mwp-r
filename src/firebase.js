@@ -144,7 +144,7 @@ export const addProductToFirestore = async (product) => {
     // Add the titleLowCase field, set as the title but in lowercase
     const modifiedProduct = {
       ...product,
-      titleLowCase: product.title.toLowerCase(),
+      titletolow: product.title.toLowerCase(),
       createdAt: serverTimestamp(),
     };
 
@@ -373,9 +373,14 @@ export const nextBatchOfProducts = async (
 };
 export const searchProductsByTitle = async (category, searchTerm) => {
   try {
-    const { hits } = await index.search(searchTerm, {
-      filters: `category:${category}`,
-    });
+    let searchParameters = {};
+
+    // If a category is provided, add a filter for that category
+    if (category) {
+      searchParameters.filters = `category:${category}`;
+    }
+
+    const { hits } = await index.search(searchTerm, searchParameters);
 
     const products = hits.map((hit) => ({
       id: hit.objectID,
@@ -388,6 +393,7 @@ export const searchProductsByTitle = async (category, searchTerm) => {
     return [];
   }
 };
+
 export const addProductToUserCollection = async (
   userId,
   productId,

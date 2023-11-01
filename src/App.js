@@ -49,7 +49,7 @@ function App() {
   ];
 
   return (
-    <div className='flex flex-col bg-gray-200 min-h-screen'>
+    <div className='flex flex-col lg:min-h-screen lg:bg-cover lg:bg-center lg:h-screen lg:bg-[url(https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fmpq-bg.jpg?alt=media&token=68c2375b-3f6c-4bae-9cab-536a93e035f4)]'>
       <Navigation />
       <Routes>
         {/* Map through the routes array and render the routes */}
@@ -70,8 +70,10 @@ function App() {
         />
         <Route
           path='/shop/soapandpowder/'
-          element={<Category category='SoapPowder' />}
+          element={<Category category='soap' />}
         />
+        <Route path='/shop/gift/' element={<Category category='gift' />} />
+        <Route path='/shop/gold/' element={<Category category='gold' />} />
         <Route path='/admin' element={<ProtectedRoutes />}>
           <Route index element={<Admin />} />
           <Route path='dashboard' element={<Dashboard />} />

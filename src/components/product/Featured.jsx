@@ -43,35 +43,47 @@ const Featured = () => {
   ]);
 
   return (
-    <div className='mt-10 justify-center items-center'>
+    <div className='my-12 justify-center items-center'>
       <h3 className='text-3xl p-4'>Exclusive Women Permfumes!</h3>
-      <ul className='grid grid-cols-6 gap-4'>
-        {productsWomen.map((product) => (
-          <li key={product.id}>
+      <ul className='grid grid-cols-3 lg:grid-cols-6  gap-4'>
+        {productsWomen.map((product, index) => (
+          <li
+            key={product.id}
+            className={` ${index >= 3 ? 'hidden lg:block' : ''}`}
+          >
             <ProductCard product={product} productId={product.id} />
           </li>
         ))}
       </ul>
       <h3 className='text-3xl p-4'>Exclusive Men Permfumes!</h3>
-      <ul className='grid grid-cols-6 gap-4'>
-        {productsMan.map((product) => (
-          <li key={product.id}>
+      <ul className='grid grid-cols-3 lg:grid-cols-6 gap-4'>
+        {productsMan.map((product, index) => (
+          <li
+            key={product.id}
+            className={` ${index >= 3 ? 'hidden lg:block' : ''}`}
+          >
             <ProductCard product={product} productId={product.id} />
           </li>
         ))}
       </ul>
       <h3 className='text-3xl p-4'>Featured Products!</h3>
-      <ul className='grid grid-cols-6 gap-4'>
-        {productsFeatured.map((product) => (
-          <li key={product.id}>
+      <ul className='grid grid-cols-3 lg:grid-cols-6 gap-4'>
+        {productsFeatured.map((product, index) => (
+          <li
+            key={product.id}
+            className={` ${index >= 3 ? 'hidden lg:block' : ''}`}
+          >
             <ProductCard product={product} productId={product.id} />
           </li>
         ))}
       </ul>
       <h3 className='text-3xl p-4'>Liked Products!</h3>
-      <ul className='grid grid-cols-6 gap-4'>
-        {productsLiked.map((product) => (
-          <li key={product.id}>
+      <ul className='grid grid-cols-3 lg:grid-cols-6 gap-4'>
+        {productsLiked.map((product, index) => (
+          <li
+            key={product.id}
+            className={` ${index >= 3 ? 'hidden lg:block' : ''}`}
+          >
             <ProductCard product={product} productId={product.id} />
           </li>
         ))}

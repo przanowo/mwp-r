@@ -192,6 +192,8 @@ const ProductUpload = () => {
             <option value='edp'>Eau de Parfum</option>
             <option value='edc'>Eau de Cologne</option>
             <option value='parfum'>Parfum</option>
+            <option value='soap'>Soap</option>
+            <option value='gift'>Gift</option>
           </select>
           {/* <label className="block text-gray-700 text-sm font-bold mb-2 py-2" htmlFor="magazine">
                         Magazine:

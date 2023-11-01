@@ -17,6 +17,8 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
   const [images, setImages] = useState([]);
   const [mainImageIndex, setMainImageIndex] = useState(0);
 
+  console.log(mainImageIndex);
+
   const handleImagesChange = (e) => {
     const selectedImages = [...e.target.files];
     setImages(selectedImages);
@@ -35,13 +37,13 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
         const imageUrl = await uploadImage(image);
         imageUrls.push(imageUrl);
       }
-      editedProduct.imageUrls = imageUrls;
+      editedProduct.images = imageUrls;
       // Set mainImageUrl only if mainImageIndex is valid
       if (
         typeof mainImageIndex !== 'undefined' &&
         mainImageIndex < imageUrls.length
       ) {
-        editedProduct.mainImageUrl = imageUrls[mainImageIndex];
+        editedProduct.mainImage = imageUrls[mainImageIndex];
       } else {
         // Handle case where mainImageIndex might be out of bounds or undefined
         console.error('Main image index is not valid!');
@@ -381,7 +383,10 @@ const EditProductModal = ({ product, onClose, onSave, productId }) => {
                       alt='Product'
                       className='w-full h-32 object-cover rounded-md'
                       width={50}
-                      // style={{border: index === mainImageIndex ? '2px solid blue' : ''}}
+                      // style={{
+                      //   border:
+                      //     index === mainImageIndex ? '2px solid blue' : '',
+                      // }}
                       // onClick={() => setMainImageIndex(index)}
                     />
                   </div>

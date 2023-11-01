@@ -50,22 +50,24 @@ const ProductCard = ({ product, productId }) => {
         </div>
 
         <div className='mt-4'>
-          <h3 className='text-sm font-semibold overflow-hidden h-[60px]'>
+          <h3 className='text-sm text-gray-700 font-semibold overflow-hidden h-[60px]'>
             {currentProduct.title}
           </h3>
-          <p className='text-lg font-bold mt-2'>${currentProduct.price}</p>
+          <p className='text-lg font-bold mt-2 text-gray-700'>
+            ${currentProduct.price}
+          </p>
         </div>
       </Link>
       <div className='mt-2'>
         <button
-          className='bg-gray-300 text-black text-center px-2 py-1 rounded-md hover:bg-gray-400 transition duration-200'
+          className=' bg-orange-100 text-black text-center px-2 py-1 rounded-md hover:bg-orange-200 transition duration-200'
           onClick={handleAddToCart}
         >
           Add to cart
         </button>
         {user && user.uid === 'sGTDrSYDRBUcvzQVL5N2GiSNVE82' ? (
           <button
-            className='bg-gray-300 text-black text-center text-sm px-2 py-1 rounded-md hover:bg-gray-400 transition duration-200'
+            className='hidden lg:inline-block bg-orange-100 text-black text-center px-2 py-1 rounded-md hover:bg-orange-200 transition duration-200'
             onClick={handleEditProduct}
           >
             Edit

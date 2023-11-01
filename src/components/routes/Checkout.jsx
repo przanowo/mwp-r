@@ -126,144 +126,146 @@ const Checkout = () => {
           <SlArrowDown />
         </button>
       </div>
-      <div
-        className='flex max-w-4xl justify-center items-center mx-auto text-xl font-semibold rounded bg-gray-200/50 my-4'
-        onClick={handleShippingExpand}
-      >
-        {!shippingExpanded && (
-          <button className='flex items-center p-3 text-3xl'>
-            Process Payment
+      {cart.length > 0 && (
+        <div
+          className='flex max-w-4xl justify-center items-center mx-auto text-xl font-semibold rounded bg-gray-200/50 my-4'
+          onClick={handleShippingExpand}
+        >
+          {!shippingExpanded && (
+            <button className='flex items-center p-3 text-3xl'>
+              Process Payment
+            </button>
+          )}
+          <button className={`p-4 ${shippingExpanded ? 'hidden' : ''}`}>
+            <SlArrowDown />
           </button>
-        )}
-        <button className={`p-4 ${shippingExpanded ? 'hidden' : ''}`}>
-          <SlArrowDown />
-        </button>
-        {shippingExpanded && (
-          <div className='flex p-6 w-full'>
-            <form className='w-full' ref={formRef}>
-              <h2 className='text-center text-4xl p-4'>Shipping Details</h2>
-              <div className='flex flex-col p-1'>
-                <label>First Name: </label>
-                <input
-                  type='text'
-                  name='firstName'
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  className='border-solid border-2 border-black/25 bg-white/25'
-                  required
-                />
-              </div>
-              <div className='flex flex-col p-1'>
-                <label>Last Name: </label>
-                <input
-                  type='text'
-                  name='lastName'
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className='border-solid border-2 border-black/25 bg-white/25'
-                  required
-                />
-              </div>
-              <div className='flex flex-col p-1 '>
-                <label>Address Line 1: </label>
-                <input
-                  type='text'
-                  name='addressLine1'
-                  value={formData.addressLine1}
-                  onChange={handleChange}
-                  className='border-solid border-2 border-black/25 bg-white/25 w-full'
-                  required
-                />
-              </div>
-              <div className='flex flex-col p-1'>
-                <label>Address Line 2: </label>
-                <input
-                  type='text'
-                  name='addressLine2'
-                  value={formData.addressLine2}
-                  onChange={handleChange}
-                  className='border-solid border-2 border-black/25 bg-white/25'
-                />
-              </div>
-              <div className='flex flex-col p-1'>
-                <label>County</label>
-                <input
-                  type='text'
-                  name='county'
-                  value={formData.county}
-                  onChange={handleChange}
-                  className='border-solid border-2 border-black/25 bg-white/25'
-                />
-              </div>
-              <div className='flex flex-col p-1'>
-                <label>City</label>
-                <input
-                  type='text'
-                  name='city'
-                  value={formData.city}
-                  onChange={handleChange}
-                  className='border-solid border-2 border-black/25 bg-white/25'
-                  required
-                />
-              </div>
-              <div className='flex flex-col p-1'>
-                <label>Postcode</label>
-                <input
-                  type='text'
-                  name='postcode'
-                  value={formData.postcode}
-                  onChange={handleChange}
-                  className='border-solid border-2 border-black/25 bg-white/25'
-                  required
-                />
-              </div>
-              <div className='flex flex-col p-1'>
-                <label>Country</label>
-                <input
-                  type='text'
-                  name='country'
-                  value={formData.country}
-                  onChange={handleChange}
-                  className='border-solid border-2 border-black/25 bg-white/25'
-                  required
-                />
-              </div>
-              <div className='flex flex-col p-1'>
-                <label>Phone Number</label>
-                <input
-                  type='text'
-                  name='phoneNumber'
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  className='border-solid border-2 border-black/25 bg-white/25'
-                  required
-                />
-              </div>
-              <div className='flex flex-col p-1'>
-                <label>Email</label>
-                <input
-                  type='email'
-                  name='email'
-                  value={formData.email}
-                  onChange={handleChange}
-                  className='border-solid border-2 border-black/25 bg-white/25'
-                  required
-                />
-              </div>
-              <div className='flex justify-center p-2'>
-                <button
-                  onClick={processPayment}
-                  className='border-black border-2 p-2 rounded-lg hover:bg-gray-600/50 text-2xl'
-                >
-                  Process Payment
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-      </div>
+          {shippingExpanded && (
+            <div className='flex p-6 w-full'>
+              <form className='w-full' ref={formRef}>
+                <h2 className='text-center text-4xl p-4'>Shipping Details</h2>
+                <div className='flex flex-col p-1'>
+                  <label>First Name: </label>
+                  <input
+                    type='text'
+                    name='firstName'
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className='border-solid border-2 border-black/25 bg-white/25'
+                    required
+                  />
+                </div>
+                <div className='flex flex-col p-1'>
+                  <label>Last Name: </label>
+                  <input
+                    type='text'
+                    name='lastName'
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className='border-solid border-2 border-black/25 bg-white/25'
+                    required
+                  />
+                </div>
+                <div className='flex flex-col p-1 '>
+                  <label>Address Line 1: </label>
+                  <input
+                    type='text'
+                    name='addressLine1'
+                    value={formData.addressLine1}
+                    onChange={handleChange}
+                    className='border-solid border-2 border-black/25 bg-white/25 w-full'
+                    required
+                  />
+                </div>
+                <div className='flex flex-col p-1'>
+                  <label>Address Line 2: </label>
+                  <input
+                    type='text'
+                    name='addressLine2'
+                    value={formData.addressLine2}
+                    onChange={handleChange}
+                    className='border-solid border-2 border-black/25 bg-white/25'
+                  />
+                </div>
+                <div className='flex flex-col p-1'>
+                  <label>County</label>
+                  <input
+                    type='text'
+                    name='county'
+                    value={formData.county}
+                    onChange={handleChange}
+                    className='border-solid border-2 border-black/25 bg-white/25'
+                  />
+                </div>
+                <div className='flex flex-col p-1'>
+                  <label>City</label>
+                  <input
+                    type='text'
+                    name='city'
+                    value={formData.city}
+                    onChange={handleChange}
+                    className='border-solid border-2 border-black/25 bg-white/25'
+                    required
+                  />
+                </div>
+                <div className='flex flex-col p-1'>
+                  <label>Postcode</label>
+                  <input
+                    type='text'
+                    name='postcode'
+                    value={formData.postcode}
+                    onChange={handleChange}
+                    className='border-solid border-2 border-black/25 bg-white/25'
+                    required
+                  />
+                </div>
+                <div className='flex flex-col p-1'>
+                  <label>Country</label>
+                  <input
+                    type='text'
+                    name='country'
+                    value={formData.country}
+                    onChange={handleChange}
+                    className='border-solid border-2 border-black/25 bg-white/25'
+                    required
+                  />
+                </div>
+                <div className='flex flex-col p-1'>
+                  <label>Phone Number</label>
+                  <input
+                    type='text'
+                    name='phoneNumber'
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    className='border-solid border-2 border-black/25 bg-white/25'
+                    required
+                  />
+                </div>
+                <div className='flex flex-col p-1'>
+                  <label>Email</label>
+                  <input
+                    type='email'
+                    name='email'
+                    value={formData.email}
+                    onChange={handleChange}
+                    className='border-solid border-2 border-black/25 bg-white/25'
+                    required
+                  />
+                </div>
+                <div className='flex justify-center p-2'>
+                  <button
+                    onClick={processPayment}
+                    className='border-black border-2 p-2 rounded-lg hover:bg-gray-600/50 text-2xl'
+                  >
+                    Process Payment
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+        </div>
+      )}
 
-      <div className=''>
+      <div className='hidden lg:block'>
         <Footer />
       </div>
     </div>

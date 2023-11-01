@@ -74,13 +74,13 @@ const Product = () => {
   }
 
   return (
-    <div className='flex mx-auto mt-24 p-6 bg-white shadow-lg rounded-md w-5/6 items-center justify-center'>
-      <div className='flex items-center justify-center'>
-        <div className='w-1/2 pr-4'>
+    <div className='flex mx-auto mt-24 p-6 bg-white shadow-lg rounded-md items-center justify-center w-4/5 h-3/4'>
+      <div className='flex items-start'>
+        <div className='p-4 w-2/5 h-3/4 relative'>
           <img
             src={product.mainImage}
             alt={product.title}
-            className='w-full h-2/3 object-cover mb-4 rounded-md cursor-pointer'
+            className='w-full h-full object-cover mb-4 rounded-md cursor-pointer'
             onClick={handleImageClick}
           />
           <div className='grid grid-cols-3 gap-2 cursor-pointer w-2/3'>
@@ -97,7 +97,7 @@ const Product = () => {
               ))}
           </div>
         </div>
-        <div className='w-1/2 pl-4'>
+        <div className='w-1/2 pl-4 pt-12'>
           <h2 className='text-2xl font-bold mb-2'>{product.title}</h2>
           <p className='mb-2'>
             {' '}
@@ -109,20 +109,21 @@ const Product = () => {
           </p>
           <p className='text-gray-600'>Stock: {product.quantity}</p>
           <p className='text-gray-600'>Sex: {product.sex}</p>
-          <p className='text-gray-600'>Category: {product.typ}</p>
+          <p className='text-gray-600'>Category: {product.category}</p>
+          <p className='text-gray-600'>Type: {product.typ}</p>
           <p className='text-gray-600'>Size: {product.size} ml</p>
           <p className='text-xl font-bold my-4'>${product.price}</p>
           {/* <p className="mb-2"><span className="font-semibold">Brand:</span> {product.brand}</p> */}
           {/* <p className="mb-2">{product.ml} ml</p> */}
           <button
-            className='bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition duration-200'
+            className='bg-orange-100 px-4 py-2 rounded-md hover:bg-orange-200  transition duration-200'
             onClick={handleAddToCart}
           >
             Add to cart
           </button>
-          {user && user.uid === 'gwCvu8CwOCToe2owDmtKEHm7Cvj2' ? (
+          {user && user.uid === 'sGTDrSYDRBUcvzQVL5N2GiSNVE82' ? (
             <button
-              className='bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition duration-200'
+              className='bg-orange-100 mx-2 px-4 py-2 rounded-md hover:bg-orange-200 transition duration-200'
               onClick={handleEditProduct}
             >
               Edit

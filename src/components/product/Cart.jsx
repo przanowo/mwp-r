@@ -7,7 +7,9 @@ const Cart = () => {
     useContext(CartContext);
 
   if (cart.length === 0) {
-    return <div className='flex flex-grow'>Your cart is empty.</div>;
+    return (
+      <div className='flex flex-grow justify-center'>Your cart is empty.</div>
+    );
   }
 
   return (
@@ -42,7 +44,7 @@ const Cart = () => {
                 <div className='flex items-center'>
                   <button
                     onClick={() => increaseQuantity(product.id)}
-                    className='bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-full shadow-md mr-2'
+                    className='bg-blue-500 hover:bg-blue-400 text-white px-3 py-1 rounded-full shadow-md mr-2'
                   >
                     +
                   </button>
@@ -51,15 +53,15 @@ const Cart = () => {
                     disabled={product.quantity <= 1}
                     className={`px-3 py-1 rounded-full shadow-md ${
                       product.quantity <= 1
-                        ? 'bg-gray-300 cursor-not-allowed'
-                        : 'bg-red-500 hover:bg-red-600 text-white'
+                        ? 'bg-gray-200/25 cursor-not-allowed'
+                        : 'bg-gray-400 hover:bg-gray-500 text-white'
                     }`}
                   >
                     -
                   </button>
                   <button
                     onClick={() => removeFromCart(product.id)}
-                    className='ml-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-1 rounded-full shadow-md'
+                    className='ml-2 bg-red-300 hover:bg-red-400 text-white px-4 py-1 rounded-full shadow-md'
                   >
                     Remove
                   </button>

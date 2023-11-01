@@ -23,6 +23,9 @@ const Category = ({ category }) => {
       'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fperfume.jpg?alt=media&token=d396d83c-5a15-40a2-8938-6fc55a31463a',
     sample:
       'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2Fsample.jpg?alt=media&token=35f967b0-d218-4c2e-8867-5e0a8575a48c',
+    soap: 'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2FSOAP.jpg?alt=media&token=0c4d3b4b-8816-4081-b27e-b03e1a81fae5',
+    gift: 'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2FGIFT.jpg?alt=media&token=813c0bc1-33f1-4575-b553-9fa1b1b3e074',
+    gold: 'https://firebasestorage.googleapis.com/v0/b/miniparfumqueen.appspot.com/o/images%2Fbg%2FGOLD.jpg?alt=media&token=d3b8c8d9-9219-436a-bcca-27b82ac333f8',
   };
 
   useEffect(() => {
@@ -62,7 +65,7 @@ const Category = ({ category }) => {
   return (
     <div className='h-screen justify-center items-center'>
       <div
-        className='flex bg-cover bg-center items-end justify-center h-screen'
+        className='hidden lg:flex bg-cover bg-center items-end justify-center h-screen'
         style={{ backgroundImage: `url(${backgroundImageURL})` }}
       >
         <button
@@ -74,12 +77,20 @@ const Category = ({ category }) => {
           <SlArrowDown />
         </button>
       </div>
-      <div className='pt-24' ref={nextDivRef}>
+      <div className='flex lg:hidden text-center justify-center pt-10'>
+        <p className='text-4xl uppercase text-gray-700'>{category}</p>
+        {/* <img
+          src={backgroundImageURL}
+          alt={category}
+          className='object-cover h-64 w-full'
+        /> */}
+      </div>
+      <div className='lg:pt-24' ref={nextDivRef}>
         <SearchComponent
           category={category}
           setSearchResults={setSearchResults}
         />
-        <ul className='grid grid-cols-6 gap-4'>
+        <ul className='grid grid-cols-3 lg:grid-cols-6 gap-4 mx-4'>
           {products.map((product) => (
             <li key={product.id}>
               <ProductCard product={product} productId={product.id} />
@@ -87,11 +98,16 @@ const Category = ({ category }) => {
           ))}
         </ul>
       </div>
-      <div className='flex justify-center mb-16'>
+      <div className='flex justify-center m-16 text-2xl '>
         {loading && <p>Loading...</p>}
-        <button onClick={handleClick}>Load more</button>
+        <button
+          onClick={handleClick}
+          className='bg-orange-100 hover:bg-orange-200 px-4 py-2 rounded-md'
+        >
+          Load more
+        </button>
       </div>
-      <div className=''>
+      <div className='hidden lg:block'>
         <Footer />
       </div>
     </div>
