@@ -269,7 +269,7 @@ const fetchProducts = async (
 };
 export const fetchFeaturedProducts = async (limitNum) => {
   const queryConditions = [where('featured', '==', 'yes')];
-  const queryConditionOrder = [orderBy('createdAt', 'desc')];
+  const queryConditionOrder = [orderBy('price', 'desc')];
   return {
     productsFeatured: await fetchProducts(
       queryConditions,

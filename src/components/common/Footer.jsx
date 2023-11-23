@@ -20,7 +20,9 @@ const Footer = () => {
                   <span className='ltr:mr-3 rtl:ml-3 relative top-0.5 lg:top-1 text-sm lg:text-base'>
                     <IoLogoInstagram />
                   </span>
-                  <Link to='www.Instagram.com'>Instagram</Link>
+                  <Link to='https://www.instagram.com/gyongyikonyves_miniparfumqueen/?utm_source=ig_web_button_share_sheet&igshid=OGQ5ZDc2ODk2ZA=='>
+                    Instagram
+                  </Link>
                 </li>
                 <li className='flex items-baseline'>
                   <span className='ltr:mr-3 rtl:ml-3 relative top-0.5 lg:top-1 text-sm lg:text-base'>
